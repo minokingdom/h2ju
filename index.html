@@ -17,7 +17,7 @@
     rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
-    /* PC에서도 모바일 비율을 유지하기 위한 통합 레이아웃 마감 */
+    /* PC에서도 모바일 비율과 레이아웃을 '완벽히' 유지하기 위한 마감 */
     body {
       max-width: 500px !important;
       margin: 0 auto !important;
@@ -29,23 +29,70 @@
     }
     
     html {
-      background: #f1f5f9 !important; /* PC 배경을 옅은 그레이로 처리하여 웹자보를 돋보이게 함 */
+      background: #f1f5f9 !important;
     }
 
-    .floating-nav {
+    /* 모바일 전용 2열 그리드 레이아웃 강제 (핵심가치, 영상 등) */
+    .philosophy-grid, 
+    .video-grid {
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 12px !important;
+    }
+
+    /* 리스트형 섹션은 1열 유지 (모바일과 동일) */
+    .career-section, 
+    .pledge-grid, 
+    .contact-grid {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      gap: 12px !important;
+    }
+
+    /* 폼 입력란 100% 너비 및 수직 정렬 강제 */
+
+    /* 폼 입력란 100% 너비 및 수직 정렬 강제 */
+    .form-row {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+      width: 100% !important;
+    }
+
+    .form-input {
+      width: 100% !important;
+      flex: none !important; /* 가로 너비 고정 해제 */
+    }
+
+    /* 가로 분할 클래스들 해제 */
+    .career-section {
+      display: flex !important;
+      flex-direction: column !important;
+    }
+
+    .format-row, .form-row {
+      flex-direction: column !important;
+    }
+
+    .floating-nav, .mobile-menu {
       max-width: 500px !important;
       left: 50% !important;
       transform: translateX(-50%) !important;
     }
 
-    .mobile-menu {
-      max-width: 500px !important;
-      left: 50% !important;
-      transform: translateX(-50%) !important;
+    /* 상단 네비게이션 모바일 스타일 강제 (햄버거 메뉴만 표시) */
+    .nav-links {
+      display: none !important;
+    }
+    
+    .nav-mobile-toggle {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
     }
 
-    /* PC 전용 횡분할 레이아웃 해제 (모바일 스타일 강제) */
-    @media (min-width: 960px) {
+    /* PC 전용 스타일 완전 무력화 */
+    @media (min-width: 0px) {
       .hero {
         flex-direction: column !important;
         min-height: auto !important;
@@ -59,6 +106,13 @@
         right: auto !important;
         bottom: auto !important;
         margin: 0 auto !important;
+        max-width: 280px !important;
+      }
+      .hero-candidate {
+        justify-content: center !important;
+      }
+      .hero-cta {
+        justify-content: center !important;
       }
     }
   </style>
