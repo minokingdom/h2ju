@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initNavigation();
   initScrollAnimations();
-  initParticles();
+  initPlexus();
   initCountUp();
   initSupportForm();
   initSmoothScroll();
@@ -475,34 +475,71 @@ function initScrollAnimations() {
   elements.forEach(el => observer.observe(el));
 }
 
-// ── Particles ──
-function initParticles() {
-  const container = document.getElementById('particles');
-  if (!container) return;
-
-  // Fewer particles on mobile for performance
-  const isMobile = window.innerWidth < 600;
-  const count = isMobile ? 12 : 20;
-
-  for (let i = 0; i < count; i++) {
-    const p = document.createElement('div');
-    p.classList.add('particle');
-
-    const size = Math.random() * 4 + 2;
-    const left = Math.random() * 100;
-    const dur = Math.random() * 15 + 10;
-    const delay = Math.random() * 15;
-    const opacity = Math.random() * 0.4 + 0.1;
-
-    p.style.cssText = `
-      width:${size}px;height:${size}px;
-      left:${left}%;bottom:-10px;
-      animation-duration:${dur}s;
-      animation-delay:${delay}s;
-      opacity:${opacity};
-    `;
-    container.appendChild(p);
+// ── 캔버스 기반 '연결의 네트워크' (Plexus) 애니메이션 ──
+function initPlexus() {
+  const canvas = document.getElementById('hero-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  
+  let w, h, particles = [];
+  const COUNT = 80; // 입자 개수 대폭 증가 (더 풍성하게)
+  const DIST = 120; // 연결 거리 확대 (더 촘촘한 그물망)
+  
+  function resize() {
+    w = canvas.width = canvas.offsetWidth;
+    h = canvas.height = canvas.offsetHeight;
   }
+  window.addEventListener('resize', resize);
+  resize();
+
+  class Particle {
+    constructor() {
+      this.init();
+    }
+    init() {
+      this.x = Math.random() * w;
+      this.y = Math.random() * h;
+      this.vx = (Math.random() - 0.5) * 0.7; // 속도감 업
+      this.vy = (Math.random() - 0.5) * 0.7; // 속도감 업
+      this.r = Math.random() * 1.5 + 1;
+    }
+    update() {
+      this.x += this.vx; this.y += this.vy;
+      if (this.x < 0 || this.x > w) this.vx *= -1;
+      if (this.y < 0 || this.y > h) this.vy *= -1;
+    }
+    draw() {
+      ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.55)'; // 점 투명도 업
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < COUNT; i++) particles.push(new Particle());
+
+  function animate() {
+    ctx.clearRect(0, 0, w, h);
+    // 배경색 채우기
+    ctx.fillStyle = '#001d3d'; ctx.fillRect(0, 0, w, h);
+
+    particles.forEach((p, i) => {
+      p.update(); p.draw();
+      for (let j = i + 1; j < particles.length; j++) {
+        const p2 = particles[j];
+        const dx = p.x - p2.x, dy = p.y - p2.y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        if (d < DIST) {
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(255, 255, 255, ${0.28 * (1 - d / DIST)})`; // 선 선명도 업
+          ctx.lineWidth = 0.5;
+          ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        }
+      }
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
 }
 
 // ── Count Up ──
