@@ -47,8 +47,10 @@ async function initGallery() {
 
   try {
     // 1. CORS 우회 프록시(allorigins)를 사용하여 드라이브 폴더의 HTML 데이터 가져오기
-    const embedUrl = `https://drive.google.com/embeddedfolderview?id=${DRIVE_FOLDER_ID}`;
-    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(embedUrl)}`;
+    // 사진 업로드 즉시 반영되도록 캐시 무효화(Cache-Busting) 파라미터(현재 시간) 추가
+    const timestamp = new Date().getTime();
+    const embedUrl = `https://drive.google.com/embeddedfolderview?id=${DRIVE_FOLDER_ID}&t=${timestamp}`;
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(embedUrl)}&cb=${timestamp}`;
 
     const resp = await fetch(proxyUrl);
     if (!resp.ok) throw new Error('Proxy error');
