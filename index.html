@@ -215,6 +215,15 @@
         font-size: 0.85rem !important;
         padding: 0 10px !important;
       }
+
+      /* 6. 주요 이력 세부 항목 (더불어민주당 남동(을)...) 1줄 강제 정렬 */
+      .career-list li {
+        font-size: 0.82rem !important; /* 폰트를 살짝 압축하여 한 줄에 수납 */
+        white-space: nowrap !important; /* 절대 2줄로 깨지지 않게 방어선 구축 */
+        letter-spacing: -0.05em !important; /* 자간 압축 */
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+      }
     }
   </style>
 </head>
