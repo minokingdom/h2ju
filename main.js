@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── Gallery Config ──
-// 구글 드라이브 폴더 ID
+// 구글 드라이브 폴더 ID (내부 앱스 스크립트와 통신 시 사용)
 const DRIVE_FOLDER_ID = '1oumiKa0CepOu2SetVxgrtrtd9eahkQXQ';
 
 // 구글 드라이브 이미지 URL 헬퍼
@@ -46,8 +46,7 @@ async function initGallery() {
   let items = [];
 
   try {
-    // 1. CORS 우회 프록시(codetabs)를 사용하여 드라이브 폴더의 HTML 데이터 가져오기
-    // 사진 업로드 즉시 반영되도록 캐시 무효화(Cache-Busting) 파라미터(현재 시간) 추가
+    // 1. CORS 우회 프록시를 사용하여 드라이브 폴더의 HTML 데이터 가져오기
     const timestamp = new Date().getTime();
     const embedUrl = `https://drive.google.com/embeddedfolderview?id=${DRIVE_FOLDER_ID}&t=${timestamp}`;
     const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(embedUrl)}`;
@@ -56,7 +55,7 @@ async function initGallery() {
     if (!resp.ok) throw new Error('Proxy error');
     const html = await resp.text();
 
-    // 2. ID 추출 (정규식 사용 - 프록시된 HTML에서 더 확실한 방법)
+    // 2. ID 추출 (정규식 사용)
     const idRegex = /\/file\/d\/([a-zA-Z0-9_-]+)\//g;
     let match;
     const ids = new Set(); // 중복 방지
