@@ -628,12 +628,10 @@ function initSupportForm() {
       // 3. 데이터 전송
       const data = { name, phone: phoneFormatted, message: msg };
 
-      // Google Apps Script는 no-cors 모드로 전송해야 할 때가 많습니다.
+      // 구글 서버와의 통신을 위해 JSON 데이터를 문자열로 전송합니다.
       await fetch(GOOGLE_SHEET_URL, {
         method: "POST",
         mode: "no-cors",
-        cache: "no-cache",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       });
 
