@@ -575,7 +575,7 @@ function animateCount(el, start, end, duration) {
 }
 
 // ── 구글 스프레드시트 연동 설정 ──
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxnFqjF5KQJFv4q8ZZ5_1f36APxrjVetitrjacbJUT9SA5MJlhejNVC1HH4VBw02v7xCQ/exec";
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz6tgPzLQAqKr5z5RGmT5rvO0vwVuugGKMEgOJysAR45GwesN7YvntyTNLeBfZEoHT-UQ/exec";
 
 function initSupportForm() {
   const form = document.getElementById('support-form');
