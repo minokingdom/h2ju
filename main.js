@@ -41,7 +41,7 @@ async function initGallery() {
   if (!wrapper) return;
 
   // 로딩 표시
-  wrapper.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:200px;width:100%;color:#999;">구글 드라이브 연결 중...</div>';
+  wrapper.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:200px;width:100%;color:#999;">사진을 가져오는 중....</div>';
 
   let items = [];
 
@@ -482,11 +482,11 @@ function initPlexus() {
   const canvas = document.getElementById('hero-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  
+
   let w, h, particles = [];
   const COUNT = 80; // 입자 개수 대폭 증가 (더 풍성하게)
   const DIST = 120; // 연결 거리 확대 (더 촘촘한 그물망)
-  
+
   function resize() {
     w = canvas.width = canvas.offsetWidth;
     h = canvas.height = canvas.offsetHeight;
@@ -575,7 +575,7 @@ function animateCount(el, start, end, duration) {
 }
 
 // ── 구글 스프레드시트 연동 설정 ──
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzPk_Meh8DkYJ2BPxQ9mX6qOGWei31fUgS0XubNHw1LB0l2-MFVoKxk2zeiW9C-22_hWw/exec";
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwC6qNNfcKMRRBfYnnNYDZdRRn6zl1seJK8wm3tn-eEtOQCEdv4XD2sCO6gyt01ndR-Mw/exec";
 
 function initSupportForm() {
   const form = document.getElementById('support-form');
