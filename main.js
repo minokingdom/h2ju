@@ -46,11 +46,11 @@ async function initGallery() {
   let items = [];
 
   try {
-    // 1. CORS 우회 프록시(allorigins)를 사용하여 드라이브 폴더의 HTML 데이터 가져오기
+    // 1. CORS 우회 프록시(codetabs)를 사용하여 드라이브 폴더의 HTML 데이터 가져오기
     // 사진 업로드 즉시 반영되도록 캐시 무효화(Cache-Busting) 파라미터(현재 시간) 추가
     const timestamp = new Date().getTime();
     const embedUrl = `https://drive.google.com/embeddedfolderview?id=${DRIVE_FOLDER_ID}&t=${timestamp}`;
-    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(embedUrl)}&cb=${timestamp}`;
+    const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(embedUrl)}`;
 
     const resp = await fetch(proxyUrl);
     if (!resp.ok) throw new Error('Proxy error');
@@ -575,7 +575,7 @@ function animateCount(el, start, end, duration) {
 }
 
 // ── 구글 스프레드시트 연동 설정 ──
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbydQAp8P2wRErhKHmc_DDQZdQDjsQufDfYYsCfs6-4mYF7q7ph3rGY5djwbqc0gBLitRQ/exec";
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxnFqjF5KQJFv4q8ZZ5_1f36APxrjVetitrjacbJUT9SA5MJlhejNVC1HH4VBw02v7xCQ/exec";
 
 function initSupportForm() {
   const form = document.getElementById('support-form');

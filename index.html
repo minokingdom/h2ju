@@ -7,7 +7,7 @@
   <title>남동구의원 예비후보 하현주</title>
   <meta name="description" content="남동구의원 예비후보 하현주 온라인 선거사무소입니다. 하나 되는 마음으로 함께 공감하고 소통하겠습니다.">
   <meta property="og:title" content="남동구의원 예비후보 하현주">
-  <meta property="og:description" content="남동의 새로운 변화 하현주! 인천의 새로운 바람 박찬대!">
+  <meta property="og:description" content="인천의 새로운 바람 박찬대! 남동의 기분좋은변화 하현주! ">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://h2ju.vercel.app/bike.png">
   <meta property="og:url" content="https://h2ju.vercel.app/">
@@ -21,7 +21,8 @@
   <style>
     /* PC-모바일 통합 브릿지 레이아웃 (480px 이하 초소형 폰 완벽 대응) */
     html {
-      background: #f1f5f9 !important; /* PC 배경 */
+      background: #f1f5f9 !important;
+      /* PC 배경 */
     }
 
     body {
@@ -40,22 +41,28 @@
       position: relative !important;
       background: #001d3d !important;
       overflow: hidden !important;
-      height: auto !important; /* 높이 제한 해제 */
+      height: auto !important;
+      /* 높이 제한 해제 */
       min-height: 0 !important;
-      display: block !important; /* 자연스러운 흐름 */
+      display: block !important;
+      /* 자연스러운 흐름 */
       padding: 0 !important;
     }
 
     .hero-canvas {
       position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       z-index: 1;
     }
 
     .hero-content {
       position: relative !important;
       z-index: 10 !important;
-      padding: 100px 20px 20px !important; /* 상단 여백 유지, 하단 축소 */
+      padding: 100px 20px 20px !important;
+      /* 상단 여백 유지, 하단 축소 */
       width: 100% !important;
       text-align: center !important;
     }
@@ -79,15 +86,19 @@
       width: 100% !important;
       display: flex !important;
       justify-content: center !important;
-      margin-bottom: 5px !important; /* 배너와 아주 살짝의 여유 (그림자 확인용) */
+      margin-bottom: 5px !important;
+      /* 배너와 아주 살짝의 여유 (그림자 확인용) */
     }
 
     .portrait-img {
       display: block !important;
-      width: 94% !important; /* 웅장한 크기 유지 */
-      max-width: 500px !important; 
-      height: auto !important; /* 높이는 원본 비율에 따라 자동 조절 (안 잘림) */
-      border-radius: 24px !important; /* 부드러운 라운드 케이스 */
+      width: 94% !important;
+      /* 웅장한 크기 유지 */
+      max-width: 500px !important;
+      height: auto !important;
+      /* 높이는 원본 비율에 따라 자동 조절 (안 잘림) */
+      border-radius: 24px !important;
+      /* 부드러운 라운드 케이스 */
       box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4) !important;
       margin: 0 auto !important;
       border: 1px solid rgba(255, 255, 255, 0.2) !important;
@@ -97,35 +108,66 @@
     }
 
     .hero-animated-bg {
-      position: absolute !important; 
-      top: 0 !important; left: 0 !important; 
-      width: 100% !important; height: 100% !important;
-      background: #001d3d !important; /* 기본 진한 배경색 */
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      background: #001d3d !important;
+      /* 기본 진한 배경색 */
       background: linear-gradient(135deg, #001d3d 0%, #003566 100%) !important;
-      overflow: hidden !important; 
+      overflow: hidden !important;
       z-index: 1 !important;
     }
 
     /* 빛의 덩어리 가시성 극대화 (절대 안 보일 수 없는 선명함) */
     .blob {
-      position: absolute !important; width: 400px; height: 400px;
-      background: rgba(0, 201, 255, 0.7) !important; /* 형광에 가까운 하늘색 */
+      position: absolute !important;
+      width: 400px;
+      height: 400px;
+      background: rgba(0, 201, 255, 0.7) !important;
+      /* 형광에 가까운 하늘색 */
       filter: blur(70px) !important;
-      border-radius: 50% !important; 
+      border-radius: 50% !important;
       animation: move 15s infinite alternate ease-in-out !important;
     }
 
-    .blob-1 { top: -10%; left: -10%; background: rgba(0, 255, 255, 0.8) !important; }
-    .blob-2 { bottom: 0%; right: -10%; animation-duration: 20s !important; background: rgba(0, 150, 255, 0.6) !important; }
-    .blob-3 { top: 35%; left: 15%; animation-duration: 12s !important; background: rgba(0, 255, 180, 0.5) !important; }
-
-    @keyframes move {
-      0% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(30px, 60px) scale(1.1); }
-      100% { transform: translate(-20px, 20px) scale(0.9); }
+    .blob-1 {
+      top: -10%;
+      left: -10%;
+      background: rgba(0, 255, 255, 0.8) !important;
     }
 
-    .floating-nav, .mobile-menu {
+    .blob-2 {
+      bottom: 0%;
+      right: -10%;
+      animation-duration: 20s !important;
+      background: rgba(0, 150, 255, 0.6) !important;
+    }
+
+    .blob-3 {
+      top: 35%;
+      left: 15%;
+      animation-duration: 12s !important;
+      background: rgba(0, 255, 180, 0.5) !important;
+    }
+
+    @keyframes move {
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      50% {
+        transform: translate(30px, 60px) scale(1.1);
+      }
+
+      100% {
+        transform: translate(-20px, 20px) scale(0.9);
+      }
+    }
+
+    .floating-nav,
+    .mobile-menu {
       width: 100% !important;
       max-width: 500px !important;
       left: 50% !important;
@@ -133,24 +175,37 @@
     }
 
     /* 상단 네비게이션: 무조건 햄버거 메뉴만 표시 */
-    .nav-links { display: none !important; }
-    .nav-mobile-toggle { display: flex !important; align-items: center !important; justify-content: center !important; }
+    .nav-links {
+      display: none !important;
+    }
+
+    .nav-mobile-toggle {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
 
     /* 핵심가치 & 영상: 모바일 전용 2열 그리드 강제 */
-    .philosophy-grid, .video-grid {
+    .philosophy-grid,
+    .video-grid {
       display: grid !important;
       grid-template-columns: repeat(2, 1fr) !important;
       gap: 12px !important;
     }
 
     /* 이력, 공약: 모바일 전용 1열 리스트 강제 */
-    .career-section, .pledge-grid, .contact-grid {
+    .career-section,
+    .pledge-grid,
+    .contact-grid {
       display: grid !important;
       grid-template-columns: 1fr !important;
       gap: 12px !important;
     }
 
-    .career-section { display: flex !important; flex-direction: column !important; }
+    .career-section {
+      display: flex !important;
+      flex-direction: column !important;
+    }
 
     /* 응원폼: 완벽한 수직 적층 및 100% 너비 */
     .form-row {
@@ -167,21 +222,40 @@
 
     /* PC 전용 횡분할 스타일 완전 무력화 (모바일 수직 구조 강제) */
     @media (min-width: 0px) {
-      .hero { flex-direction: column !important; min-height: auto !important; }
-      .hero-content { padding: 100px 20px 40px !important; text-align: center !important; }
-      .hero-portrait { position: relative !important; right: auto !important; bottom: auto !important; margin: 0 auto !important; max-width: 280px !important; }
-      .hero-candidate, .hero-cta { justify-content: center !important; }
+      .hero {
+        flex-direction: column !important;
+        min-height: auto !important;
+      }
+
+      .hero-content {
+        padding: 100px 20px 40px !important;
+        text-align: center !important;
+      }
+
+      .hero-portrait {
+        position: relative !important;
+        right: auto !important;
+        bottom: auto !important;
+        margin: 0 auto !important;
+        max-width: 280px !important;
+      }
+
+      .hero-candidate,
+      .hero-cta {
+        justify-content: center !important;
+      }
     }
 
     /* 480px 이하 초소형 화면 텍스트 깨짐(줄바꿈) 원천 방지 */
     @media (max-width: 480px) {
+
       /* 1. 슬로건 4줄 깨짐 방지 (좌우 패딩 축소 및 폰트 크기 최적화) */
       .hero-quote {
         padding: 0 20px !important;
         font-size: 1.15rem !important;
         word-break: keep-all !important;
       }
-      
+
       /* 2. 유튜브 채널 버튼 2줄 깨짐 방지 */
       .btn-youtube {
         padding: 12px 16px !important;
@@ -198,19 +272,22 @@
 
       /* 4. 응원폼 제목 및 안내문구 (경선승리를 위해서...) 2줄 깨짐 방지 */
       .support-card {
-        padding: 24px 16px !important; /* 모바일에서 좌우 패딩 줄임 */
+        padding: 24px 16px !important;
+        /* 모바일에서 좌우 패딩 줄임 */
       }
+
       .support-card h3 {
         font-size: 1.15rem !important;
         white-space: nowrap !important;
         letter-spacing: -0.05em !important;
       }
-      .support-card > p {
+
+      .support-card>p {
         font-size: 0.85rem !important;
         white-space: nowrap !important;
         letter-spacing: -0.05em !important;
       }
-      
+
       /* 5. 응원 완료 피드백 텍스트 어절 단위 끊기 (글자 단위 깨짐 방지) */
       .support-result {
         word-break: keep-all !important;
@@ -220,9 +297,12 @@
 
       /* 6. 주요 이력 세부 항목 (더불어민주당 남동(을)...) 1줄 강제 정렬 */
       .career-list li {
-        font-size: 0.82rem !important; /* 폰트를 살짝 압축하여 한 줄에 수납 */
-        white-space: nowrap !important; /* 절대 2줄로 깨지지 않게 방어선 구축 */
-        letter-spacing: -0.05em !important; /* 자간 압축 */
+        font-size: 0.82rem !important;
+        /* 폰트를 살짝 압축하여 한 줄에 수납 */
+        white-space: nowrap !important;
+        /* 절대 2줄로 깨지지 않게 방어선 구축 */
+        letter-spacing: -0.05em !important;
+        /* 자간 압축 */
         overflow: hidden !important;
         text-overflow: ellipsis !important;
       }
@@ -263,7 +343,7 @@
   <!-- 히어로 섹션 (프리미엄 캔버스 애니메이션 적용) -->
   <section id="hero" class="hero">
     <canvas id="hero-canvas" class="hero-canvas"></canvas>
-    
+
     <div class="hero-content">
       <!-- 1. 슬로건 -->
       <div class="hero-quote animate-on-scroll">
@@ -303,8 +383,10 @@
     </div>
 
     <!-- 후보자 2인 사진 (하현주, 박찬대) - 가로 제한 없는 완전한 전면 디자인 -->
-    <div class="hero-portrait animate-on-scroll" style="--delay:0.4s; width: 100% !important; max-width: none !important; height: auto !important; margin: 0 !important; padding: 0 !important; border-radius: 0 !important; overflow: visible !important; border: none !important; display: block !important;">
-      <img src="candidate.png" alt="하현주 후보" class="portrait-img" style="width: 100% !important; max-width: none !important; height: auto !important; display: block !important; object-fit: contain !important; border-radius: 0 !important; border: none !important;">
+    <div class="hero-portrait animate-on-scroll"
+      style="--delay:0.4s; width: 100% !important; max-width: none !important; height: auto !important; margin: 0 !important; padding: 0 !important; border-radius: 0 !important; overflow: visible !important; border: none !important; display: block !important;">
+      <img src="candidate.png" alt="하현주 후보" class="portrait-img"
+        style="width: 100% !important; max-width: none !important; height: auto !important; display: block !important; object-fit: contain !important; border-radius: 0 !important; border: none !important;">
     </div>
   </section>
 
@@ -451,9 +533,9 @@
         <div class="career-col">
           <div class="career-label career-label--sub">전직</div>
           <ul class="career-list">
+            <li>서창2동 주민자치회장</li>
             <li>남동구 주민자치협의회 사무국장</li>
             <li>인천시 주민자치연합회 사무총장</li>
-            <li>서창2동 주민자치회장</li>
           </ul>
         </div>
       </div>
@@ -496,8 +578,8 @@
     <div class="container">
       <div class="support-section animate-on-scroll">
         <div class="support-card">
-          <h3>✊ 남동(을) 권리당원을 찾습니다</h3>
-          <p>경선승리를 위해서 따뜻한 응원 한마디를 보내주세요.</p>
+          <h3>✊ 권리당원을 찾습니다</h3>
+          <p>서창2동, 장수·서창·운연종, 만수1·6동 권리당원분들의 응원 한마디를 보내주세요.</p>
           <form id="support-form" class="support-form">
             <div class="form-row">
               <input type="text" placeholder="성함과 행정동(예: 홍길동/만수1동)" class="form-input" id="support-name">

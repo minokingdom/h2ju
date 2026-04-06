@@ -746,7 +746,7 @@ img {
 }
 
 .career-col:last-child .career-list li::before {
-  background: var(--gray-300);
+  background: var(--gray-400);
   box-shadow: none;
 }
 
