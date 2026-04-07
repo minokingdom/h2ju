@@ -229,6 +229,7 @@ function openGalleryModal(startIndex) {
   let scale = 1, posX = 0, posY = 0;
   let isDragging = false, startDragX = 0, startDragY = 0, startPosX = 0, startPosY = 0;
   let lastTouchDist = 0;
+  let isPinching = false;
 
   // 모달 생성
   const modal = document.createElement('div');
@@ -275,6 +276,7 @@ function openGalleryModal(startIndex) {
     // 더블탭 줌
     let lastTap = 0;
     wrap.addEventListener('touchend', (e) => {
+      if (isPinching) return; // 핀치 조작 중에는 더블탭 무시
       const now = Date.now();
       if (now - lastTap < 300) {
         e.preventDefault();
@@ -301,14 +303,23 @@ function openGalleryModal(startIndex) {
     }, { passive: false });
 
     // 핀치 줌 (터치)
+    let lastTouchMidX = 0;
+    let lastTouchMidY = 0;
+
     wrap.addEventListener('touchstart', (e) => {
       if (e.touches.length === 2) {
+        isPinching = true;
         lastTouchDist = getTouchDist(e.touches);
-      } else if (e.touches.length === 1 && scale > 1) {
-        isDragging = true;
-        startDragX = e.touches[0].clientX;
-        startDragY = e.touches[0].clientY;
-        startPosX = posX; startPosY = posY;
+        lastTouchMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        lastTouchMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      } else if (e.touches.length === 1) {
+        // 1인치 터치 시 드래그 상태 초기화 (줌 상태일 때만)
+        if (scale > 1) {
+          isDragging = true;
+          startDragX = e.touches[0].clientX;
+          startDragY = e.touches[0].clientY;
+          startPosX = posX; startPosY = posY;
+        }
       }
     }, { passive: true });
 
@@ -316,11 +327,35 @@ function openGalleryModal(startIndex) {
       if (e.touches.length === 2) {
         e.preventDefault();
         const dist = getTouchDist(e.touches);
+        const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+        
         const delta = (dist - lastTouchDist) * 0.008;
-        scale = Math.min(5, Math.max(1, scale + delta));
-        if (scale <= 1) resetZoom();
+        const newScale = Math.min(5, Math.max(1, scale + delta));
+        
+        if (newScale > 1) {
+          // 중심점 고정 수식: posX_new = posX_old + (midX - CenterX) * (1/scale_new - 1/scale_old)
+          // 여기서는 단순화하여 델타값을 이용한 보정 적용
+          const scaleRatio = newScale / scale;
+          // 실제 화면 중앙(모달 중앙) 좌표 계산 (대략적)
+          const rect = wrap.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          
+          // 줌 중심점 보정
+          posX += (midX - centerX) * (1/scale - 1/newScale);
+          posY += (midY - centerY) * (1/scale - 1/newScale);
+          
+          scale = newScale;
+          applyTransform(img);
+        } else {
+          resetZoom();
+          applyTransform(img);
+        }
+        
         lastTouchDist = dist;
-        applyTransform(img);
+        lastTouchMidX = midX;
+        lastTouchMidY = midY;
       } else if (e.touches.length === 1 && isDragging && scale > 1) {
         e.preventDefault();
         posX = startPosX + (e.touches[0].clientX - startDragX) / scale;
@@ -329,7 +364,20 @@ function openGalleryModal(startIndex) {
       }
     }, { passive: false });
 
-    wrap.addEventListener('touchend', () => { isDragging = false; }, { passive: true });
+    // 터치 종료 시 상태 정리 (전환 시 끊김 방지)
+    wrap.addEventListener('touchend', (e) => {
+      if (e.touches.length === 1 && scale > 1) {
+        // 2인치에서 1인치로 전환될 때 현재 손가락 기준으로 드래그 시작점 재설정
+        isDragging = true;
+        startDragX = e.touches[0].clientX;
+        startDragY = e.touches[0].clientY;
+        startPosX = posX; startPosY = posY;
+      } else if (e.touches.length === 0) {
+        isDragging = false;
+        // 핀치 종료 후 약간의 유예 시간을 두어 더블탭 오작동 방지
+        setTimeout(() => { if (!isDragging) isPinching = false; }, 100);
+      }
+    }, { passive: true });
 
     // 마우스 드래그 (줌 상태에서 이동)
     wrap.addEventListener('mousedown', (e) => {
@@ -352,7 +400,6 @@ function openGalleryModal(startIndex) {
 
     // 스와이프로 넘기기 (줌 안 된 상태에서만 & 멀티터치 방지)
     let swStartX = null;
-    let isPinching = false;
 
     wrap.addEventListener('touchstart', (e) => {
       if (e.touches.length > 1) {
