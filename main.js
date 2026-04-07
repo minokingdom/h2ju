@@ -350,15 +350,35 @@ function openGalleryModal(startIndex) {
     wrap.addEventListener('mouseup', () => { isDragging = false; wrap.style.cursor = ''; });
     wrap.addEventListener('mouseleave', () => { isDragging = false; wrap.style.cursor = ''; });
 
-    // 스와이프로 넘기기 (줌 안 된 상태에서만)
-    let swStartX = 0;
+    // 스와이프로 넘기기 (줌 안 된 상태에서만 & 멀티터치 방지)
+    let swStartX = null;
+    let isPinching = false;
+
     wrap.addEventListener('touchstart', (e) => {
-      if (e.touches.length === 1 && scale <= 1) swStartX = e.touches[0].clientX;
+      if (e.touches.length > 1) {
+        isPinching = true; // 핀치 시작 감지
+        swStartX = null;
+      } else if (e.touches.length === 1 && scale <= 1) {
+        isPinching = false;
+        swStartX = e.touches[0].clientX;
+      }
     }, { passive: true });
+
+    wrap.addEventListener('touchmove', (e) => {
+      if (e.touches.length > 1) isPinching = true;
+    }, { passive: true });
+
     wrap.addEventListener('touchend', (e) => {
-      if (scale > 1) return;
+      if (isPinching || scale > 1 || swStartX === null) {
+        swStartX = null;
+        isPinching = false;
+        return;
+      }
       const dx = e.changedTouches[0].clientX - swStartX;
-      if (Math.abs(dx) > 60) goTo(dx < 0 ? 1 : -1);
+      if (Math.abs(dx) > 70) { // 임계값 소폭 상향 (기존 60)
+        goTo(dx < 0 ? 1 : -1);
+      }
+      swStartX = null;
     }, { passive: true });
   }
 
