@@ -954,7 +954,7 @@ function renderHeroSlogan() {
   const p = document.querySelector('.hero-quote p');
   if (p) {
     let text = getSiteConfig().heroSlogan.replace(/\n/g, '<br>');
-    text = text.replace(/(#[^\s<]+)/g, '<span class="slogan-hashtag">$1</span>');
+    text = text.replace(/(#[^\s<]+)/g, '<span style="color: #ffffff;">$1</span>');
     p.innerHTML = text;
   }
 }

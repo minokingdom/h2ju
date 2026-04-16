@@ -317,89 +317,67 @@ img {
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
 
-.slogan-hashtag {
-  color: var(--blue-600);
-  background: var(--blue-200);
-  padding: 2px 12px;
-  border-radius: 6px;
-  display: inline-block;
-  margin-top: 10px;
-  font-size: 1.05em;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
 /* 📝 인사말 섹션 (Intro Message) */
 .intro-message-section {
   padding: 80px 0;
   background-color: var(--bg-light);
 }
 
-.intro-message-box {
+.intro-message-content {
   background: var(--white);
-  border-radius: 16px;
-  padding: 40px 30px;
-  box-shadow: 0 15px 35px rgba(0, 29, 61, 0.08); /* 다른 섹션과 유사한 가벼운 그림자 */
-  border-top: 4px solid var(--blue-500); /* 위쪽 포인트 라인으로 통일감 부여 */
+  border-radius: 12px;
+  padding: 32px 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
   position: relative;
   overflow: hidden;
 }
 
 .intro-greeting {
-  font-size: 1.35rem;
-  font-weight: 800;
+  font-size: 1.1rem;
+  font-weight: 500;
   color: var(--blue-600);
   margin-bottom: 24px;
-  line-height: 1.5;
+  line-height: 1.4;
   text-align: center;
 }
 
-.intro-greeting em {
-  font-style: normal;
-  display: block;
-  font-size: 1.6rem;
-  margin-top: 6px;
-  color: #1a1a1a;
+.intro-greeting strong {
+  font-size: 1.45rem;
+  font-weight: 900;
+  color: #111;
 }
 
-.intro-content {
-  font-size: 1.05rem;
-  line-height: 1.8;
-  color: #444;
+.intro-text-body {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #333;
+  text-align: center;
 }
 
-.intro-content p {
+.intro-text-body p {
   margin-bottom: 22px;
   word-break: keep-all;
 }
 
-.intro-content p:last-child {
+.intro-text-body p:last-child {
   margin-bottom: 0;
 }
 
-.intro-content strong {
+.intro-text-body strong {
   color: var(--blue-600);
-  font-weight: 700;
-  background: rgba(0, 78, 162, 0.05); /* 텍스트 강조 배경 미세하게 추가 */
-  padding: 0 4px;
-}
-
-.intro-highlight {
-  display: inline-block;
-  color: var(--blue-500);
-  font-weight: 700;
-  border-bottom: 2px solid rgba(0, 78, 162, 0.2); /* 기존 파란색 하이라이트 박스 대신 언더라인 강조 */
+  font-weight: 800;
 }
 
 .intro-finale {
   text-align: center;
   margin-top: 36px !important;
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 800;
   color: var(--blue-600);
   background: #f8fbff;
-  padding: 20px 10px;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 78, 162, 0.1);
+  padding: 16px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 78, 162, 0.08);
 }
 
 @media (max-width: 480px) {
@@ -407,20 +385,20 @@ img {
     padding: 60px 0;
   }
   
-  .intro-message-box {
-    padding: 35px 25px;
+  .intro-message-content {
+    padding: 30px 15px;
   }
   
   .intro-greeting {
-    font-size: 1.2rem;
-  }
-  
-  .intro-greeting em {
-    font-size: 1.5rem;
-  }
-  
-  .intro-content {
     font-size: 1.05rem;
+  }
+  
+  .intro-greeting strong {
+    font-size: 1.35rem;
+  }
+  
+  .intro-text-body {
+    font-size: 0.9rem;
   }
 }
 
