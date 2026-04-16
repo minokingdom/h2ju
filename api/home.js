@@ -4,8 +4,8 @@ import path from 'path';
 
 export default async function handler(req, res) {
   try {
-    // 1. 템플릿 파일 읽기 (index.html에서 이름이 변경되었습니다)
-    const filePath = path.join(process.cwd(), 'template.html');
+    // 1. 템플릿 파일 읽기 (api/template.html 위치에서 읽습니다)
+    const filePath = path.join(__dirname, 'template.html');
     let html = fs.readFileSync(filePath, 'utf8');
 
     // 3. 사이트 설정 가져오기 및 버전 계산 (강제 업데이트 포함)

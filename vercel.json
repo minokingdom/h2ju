@@ -11,7 +11,7 @@
   ],
   "functions": {
     "api/home.js": {
-      "includeFiles": "template.html"
+      "includeFiles": "api/template.html"
     }
   }
 }
