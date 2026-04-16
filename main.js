@@ -1266,17 +1266,21 @@ function showAdminPanel(password) {
 
     // Vercel KV 1MB Value Size Limit 완벽 회피를 위한 초고효율 압축
     // 카드뉴스: 최대 600px 50% 품질 (장당 약 40~60KB)
-    // 메타이지미: 최대 800px 400px (카카오 최적 사이즈) PNG 포맷 적용 (렌더링 에러 차단)
     let maxWidth = 600, maxHeight = 600;
     let format = 'image/jpeg';
     let quality = 0.5;
 
     if (currentCropTarget === 'meta') {
-      maxWidth = 800; maxHeight = 400;
-      format = 'image/png';
-      quality = 0.8; // PNG는 quality 파라미터가 무시되지만 API 규격 맞춤
+      maxWidth = 800; maxHeight = 400; // 카카오 공식 표준
+      format = 'image/jpeg';
+      quality = 0.6; // 너무 낮으면 깨지므로 0.6 유지
     }
-    const canvas = cropperInst.getCroppedCanvas({ maxWidth, maxHeight });
+    // PNG 투명 배경이 카톡 네이티브 앱에서 검정색/흰색으로 뭉개지는 오류를 막기 위해,
+    // getCroppedCanvas() 실행 시 투명도 부분을 무조건 완전한 흰색(#fff)으로 강제 채워버림
+    const canvas = cropperInst.getCroppedCanvas({ 
+      maxWidth, maxHeight,
+      fillColor: '#fff' 
+    });
     const base64Url = canvas.toDataURL(format, quality);
     
     if (currentCropTarget === 'cardnews') {
