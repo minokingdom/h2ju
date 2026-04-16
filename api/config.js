@@ -21,15 +21,20 @@ export default async function handler(req, res) {
   
   if (req.method === 'POST') {
     const { password, config: incomingConfig } = req.body || {};
+
+    // 1. 데이터 자체가 누락된 경우 (보통 용량 초과 시 발생)
+    if (req.method === 'POST' && (!req.body || (!password && !incomingConfig))) {
+      return res.status(413).json({ error: '데이터 용량이 너무 큽니다. 사진 크기를 줄여서 다시 시도해 주세요.' });
+    }
     
     const adminPass = process.env.ADMIN_PASSWORD;
     if (!adminPass) {
       return res.status(500).json({ error: 'Vercel 환경 변수가 없습니다.' });
     }
     
-    // 원본 비번과 입력 비번 모두 trim 처리 및 강제 문자열 변환
+    // 2. 비번 정규화 및 비교
     const inputPassword = String(password || '').trim();
-    const targetPassword = String(adminPass || '').trim();
+    const targetPassword = String(adminPass || '').trim().replace(/^["']|["']$/g, '');
     
     if (!inputPassword || inputPassword !== targetPassword) {
       return res.status(401).json({ error: '비밀번호가 일치하지 않습니다.' });
