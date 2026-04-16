@@ -14,30 +14,21 @@ export default async function handler(req, res) {
     const deployTag = '20260417-0140';
     const version = config && config.configDate ? `${config.configDate}-${deployTag}` : deployTag;
 
-    // 4. 메타태그 도메인 및 주소를 현재 접속한 도메인(Host)에 맞춰 동적으로 치환
-    const host = req.headers.host || 'xn--2e0b94dbtdp35a89nr3a.kr';
-    const protocol = req.headers['x-forwarded-proto'] || 'https';
+    // 4. 모든 자산 주소에 버전 번호(?v=...)를 전역적으로 강제 주입
+    // 특정 태그를 찾는 정규식 대신, 파일 전체에서 해당 파일명을 찾아 치환하는 가장 확실한 방법을 사용합니다.
+    const versionedThumb = `thumb.jpg?v=${version}`;
+    const versionedJS = `main.js?v=${version}`;
+    const versionedCSS = `style.css?v=${version}`;
+
+    html = html.split('thumb.jpg').join(versionedThumb);
+    html = html.split('main.js').join(versionedJS);
+    html = html.split('style.css').join(versionedCSS);
+
+    // og:url 도 접속한 도메인에 맞춰 강제 치환
     const baseUrl = `${protocol}://${host}`;
-    const versionedUrl = `${baseUrl}/thumb.jpg?v=${version}`;
-    
-    // index.html 내의 주요 자산(js, css)에도 캐시 버스터(?v=...) 적용
-    html = html.replace(/src="main\.js"/g, `src="main.js?v=${version}"`);
-    html = html.replace(/href="style\.css"/g, `href="style.css?v=${version}"`);
-
-    // og:url 치환
     html = html.replace(
-      /<meta property="og:url" content="[^"]+">/g,
-      `<meta property="og:url" content="${baseUrl}/">`
-    );
-
-    // og:image / twitter:image 치환
-    html = html.replace(
-      /<meta property="og:image" content="[^"]+">/g, 
-      `<meta property="og:image" content="${versionedUrl}">`
-    );
-    html = html.replace(
-      /<meta name="twitter:image" content="[^"]+">/g, 
-      `<meta name="twitter:image" content="${versionedUrl}">`
+      /property="og:url" content="[^"]+"/g,
+      `property="og:url" content="${baseUrl}/"`
     );
 
     // 5. 서버 캐시 무력화 (진단 기간 동안 항상 최신 HTML을 내보냅니다)
