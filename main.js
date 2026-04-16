@@ -1348,7 +1348,15 @@ function showAdminPanel(password) {
     const metaImage = el.querySelector('#adm-meta-url').value.trim();
 
     // 서버로 데이터 전송
-    const newConfig = { videos, heroSlogan, popups, careers: { current, previous }, cardNews, metaImage };
+    const newConfig = { 
+      videos, 
+      heroSlogan, 
+      popups, 
+      careers: { current, previous }, 
+      cardNews, 
+      metaImage,
+      configDate: Date.now() // 캐시 갱신을 위한 타임스탬프 추가
+    };
     
     try {
       btn.textContent = '⏳ 저장 중...';

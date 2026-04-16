@@ -22,14 +22,14 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { password, config: incomingConfig } = req.body || {};
     
-    const adminPass = (process.env.ADMIN_PASSWORD || '').trim();
+    const adminPass = process.env.ADMIN_PASSWORD;
     if (!adminPass) {
-      return res.status(500).json({ error: 'Vercel 환경 변수(ADMIN_PASSWORD)가 설정되지 않았습니다.' });
+      return res.status(500).json({ error: 'Vercel 환경 변수가 없습니다.' });
     }
     
-    // 유저 입력값과 서버 환경변수 모두 trim() 처리하여 공백 오차 제거
-    if (!password || password.trim() !== adminPass) {
-      return res.status(401).json({ error: '비밀번호가 일치하지 않습니다. (입력값을 다시 확인해주세요)' });
+    // 환경변수와 입력값 모두 trim() 처리하여 공백으로 인한 불일치 방지
+    if (!password || password.trim() !== adminPass.trim()) {
+      return res.status(401).json({ error: '비밀번호가 일치하지 않습니다.' });
     }
     
     try {
