@@ -1229,7 +1229,7 @@ function showAdminPanel(password) {
       const isMeta = inp.id === 'adm-meta-file';
       currentCropTarget = isMeta ? 'meta' : 'cardnews';
       currentCropIndex = isMeta ? null : parseInt(inp.getAttribute('data-index'));
-      const ratio = isMeta ? 1.91 : 1; // 메타태그는 1.91:1, 카드뉴스는 1:1
+      const ratio = isMeta ? 2 : 1; // 카톡 공식 권장 썸네일 비율 2:1 (800x400)
       
       const reader = new FileReader();
       reader.onload = (re) => {
@@ -1266,14 +1266,18 @@ function showAdminPanel(password) {
 
     // Vercel KV 1MB Value Size Limit 완벽 회피를 위한 초고효율 압축
     // 카드뉴스: 최대 600px 50% 품질 (장당 약 40~60KB)
-    // 메타이지미: 최대 800px 50% 품질 (장당 약 50~80KB)
+    // 메타이지미: 최대 800px 400px (카카오 최적 사이즈) PNG 포맷 적용 (렌더링 에러 차단)
     let maxWidth = 600, maxHeight = 600;
+    let format = 'image/jpeg';
+    let quality = 0.5;
+
     if (currentCropTarget === 'meta') {
-      maxWidth = 800; maxHeight = 418; // 1.91:1 비율 유지하면서 해상도 대폭 감소
+      maxWidth = 800; maxHeight = 400;
+      format = 'image/png';
+      quality = 0.8; // PNG는 quality 파라미터가 무시되지만 API 규격 맞춤
     }
     const canvas = cropperInst.getCroppedCanvas({ maxWidth, maxHeight });
-    // 품질을 0.5로 낮추어 용량을 획기적으로 줄여 다중 업로드 시에도 KV 한도(1MB) 이하 유지
-    const base64Url = canvas.toDataURL('image/jpeg', 0.5);
+    const base64Url = canvas.toDataURL(format, quality);
     
     if (currentCropTarget === 'cardnews') {
       const row = el.querySelectorAll('#adm-cnlist .adm-vrow')[currentCropIndex];
