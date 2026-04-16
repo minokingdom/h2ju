@@ -3,7 +3,7 @@ import { kv } from '@vercel/kv';
 export const config = {
   api: {
     bodyParser: {
-      sizeLimit: '4mb',
+      sizeLimit: '10mb',
     },
   },
 };
