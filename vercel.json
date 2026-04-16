@@ -7,6 +7,10 @@
     {
       "source": "/thumb.jpg",
       "destination": "/api/og-image"
+    },
+    {
+      "source": "/og-banner-final.jpg",
+      "destination": "/api/og-image"
     }
   ],
   "functions": {
