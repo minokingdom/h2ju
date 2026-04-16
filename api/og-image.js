@@ -27,17 +27,22 @@ export default async function handler(req, res) {
     console.error('OG Image Fetch Error:', e);
   }
   
-  // 기본 이미지(bike.png) 반환
+  // 최종 방어선: 그 어떠한 경우에도 404(하얀 박스)를 내보내지 않고 기본 이미지를 반환합니다.
   try {
     const defaultImgPath = path.join(__dirname, 'bike.png');
-    const defaultImg = fs.readFileSync(defaultImgPath);
-    
-    res.setHeader('Content-Type', 'image/png');
-    res.setHeader('Content-Length', defaultImg.length);
-    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
-    return res.end(defaultImg);
+    if (fs.existsSync(defaultImgPath)) {
+      const defaultImg = fs.readFileSync(defaultImgPath);
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Content-Length', defaultImg.length);
+      res.setHeader('Cache-Control', 'public, s-maxage=60');
+      return res.end(defaultImg);
+    }
   } catch (err) {
     console.error('Final Image Error:', err);
-    return res.status(404).end();
   }
+
+  // 진짜 최후의 수단: 1x1 도트라도 내보내서 하얀 박스를 방지합니다.
+  const dot = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
+  res.setHeader('Content-Type', 'image/png');
+  return res.end(dot);
 };
