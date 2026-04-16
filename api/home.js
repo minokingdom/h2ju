@@ -40,9 +40,11 @@ export default async function handler(req, res) {
       `<meta name="twitter:image" content="${versionedUrl}">`
     );
 
-    // 5. 브라우저 캐시는 짧게(1분), 하지만 서빙은 빠르게
+    // 5. 서버 캐시 무력화 (진단 기간 동안 항상 최신 HTML을 내보냅니다)
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     
     return res.end(html);
   } catch (e) {

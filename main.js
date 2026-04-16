@@ -1153,16 +1153,21 @@ function showAdminPanel(password) {
         <div class="adm-section">
           <div class="adm-sh">🔗 <h3>공유 썸네일(오픈그래프) 관리</h3></div>
           <div class="adm-sb">
-            <p class="adm-hint">카톡 등 링크 공유 시 나타나는 메인 썸네일입니다. 비율(1.91:1)</p>
-            <div class="adm-vrow" style="align-items:center; gap:8px;">
-               <div class="adm-vinputs" style="flex:1;">
-                  <label class="adm-btn" style="background:var(--blue-500); color:white; padding:8px 12px; border-radius:4px; font-weight:700; display:inline-flex; align-items:center; cursor:pointer;" title="썸네일 사진 찾기">
-                    + 썸네일 새로 등록
+            <p class="adm-hint">카톡 등 링크 공유 시 나타나는 메인 썸네일입니다. 권장 비율(2:1)</p>
+            <div style="display:flex; flex-direction:column; gap:12px; background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+               <div style="display:flex; justify-content:center; align-items:center;">
+                  <div id="meta-thumb-container" style="position:relative; display:inline-block;">
+                    <img id="adm-meta-thumb" src="${cfg.metaImage || 'bike.png'}" style="width:240px; height:120px; object-fit:cover; border-radius:10px; background:#222; border:1px solid rgba(255,255,255,0.15); box-shadow:0 10px 20px rgba(0,0,0,0.3); display:block;">
+                    <!-- 용량 정보가 여기에 삽입됩니다 (이미지 바로 밑) -->
+                  </div>
+               </div>
+               <div style="display:flex; justify-content:center;">
+                  <label class="adm-btn-save" style="background:#004EA2; padding:10px 24px; font-size:0.85rem; cursor:pointer; display:inline-flex; align-items:center;">
+                    ✨ 썸네일 이미지 변경 / 업로드
                     <input type="file" id="adm-meta-file" accept="image/*" style="display:none;" data-ratio="1.91">
                   </label>
                   <input type="hidden" id="adm-meta-url" value="${cfg.metaImage || ''}">
                </div>
-               <img id="adm-meta-thumb" src="${cfg.metaImage || 'bike.png'}" style="width:120px;height:63px;object-fit:cover;border-radius:6px;background:#222;border:1px solid #444;">
             </div>
           </div>
         </div>
@@ -1324,12 +1329,14 @@ function showAdminPanel(password) {
         if (!sizeEl) {
           sizeEl = document.createElement('div');
           sizeEl.id = 'adm-meta-size';
-          sizeEl.style.fontSize = '11px';
-          sizeEl.style.marginTop = '4px';
-          sizeEl.style.color = sizeInKb > 300 ? '#f87171' : '#4ade80';
-          thumb.parentElement.appendChild(sizeEl);
+          sizeEl.style.fontSize = '12px';
+          sizeEl.style.fontWeight = 'bold';
+          sizeEl.style.marginTop = '8px';
+          sizeEl.style.textAlign = 'center';
+          el.querySelector('#meta-thumb-container').appendChild(sizeEl);
         }
-        sizeEl.textContent = `현재 압축 용량: ${sizeInKb}KB ${sizeInKb > 1000 ? '(⚠️ 1MB 초과)' : '(안전)'}`;
+        sizeEl.style.color = sizeInKb > 1000 ? '#f87171' : '#4ade80';
+        sizeEl.textContent = `추출 용량: ${sizeInKb}KB ${sizeInKb > 1000 ? '(⚠️ 초대형)' : '(안전)'}`;
       }
       
       cropperModal.style.display = 'none';
