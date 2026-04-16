@@ -20,6 +20,10 @@ export default async function handler(req, res) {
     const baseUrl = `${protocol}://${host}`;
     const versionedUrl = `${baseUrl}/thumb.jpg?v=${version}`;
     
+    // index.html 내의 주요 자산(js, css)에도 캐시 버스터(?v=...) 적용
+    html = html.replace(/src="main\.js"/g, `src="main.js?v=${version}"`);
+    html = html.replace(/href="style\.css"/g, `href="style.css?v=${version}"`);
+
     // og:url 치환
     html = html.replace(
       /<meta property="og:url" content="[^"]+">/g,
