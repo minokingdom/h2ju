@@ -252,8 +252,9 @@
       /* 1. 슬로건 4줄 깨짐 방지 (좌우 패딩 축소 및 폰트 크기 최적화) */
       .hero-quote {
         padding: 0 20px !important;
-        font-size: 1.15rem !important;
+        font-size: 1.35rem !important;
         word-break: keep-all !important;
+        text-align: center !important;
       }
 
       /* 2. 유튜브 채널 버튼 2줄 깨짐 방지 */
@@ -326,8 +327,9 @@
         <a href="#gallery" class="nav-link" data-section="gallery">활동</a>
         <a href="#contact" class="nav-link" data-section="contact">참여</a>
       </div>
-      <!-- 보이지 않는 스와이프 센서만 유지 (버튼/화살표 제거) -->
-      <div id="swipe-trigger" class="swipe-trigger"></div>
+      <!-- 모두를 위해 직관적인 햄버거 메뉴 버튼 추가 -->
+      <button id="menu-btn"
+        style="background:none; border:none; color:white; font-size:28px; cursor:pointer; padding: 5px;">☰</button>
     </div>
   </nav>
 
@@ -340,6 +342,7 @@
     <a href="#career" class="mobile-link">이력</a>
     <a href="#gallery" class="mobile-link">활동</a>
     <a href="#contact" class="mobile-link">참여</a>
+    <button id="admin-entry-btn" class="mobile-admin-btn">⚙️ 관리자</button>
   </div>
 
   <!-- 히어로 섹션 (프리미엄 캔버스 애니메이션 적용) -->
@@ -353,7 +356,7 @@
           <path
             d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
         </svg>
-        <p>하나 되는 마음으로 함께<br>공감하고 소통하겠습니다.</p>
+        <p>남동을 지역위원회<br>#영입인재_1호</p>
         <svg fill="currentColor" viewBox="0 0 24 24" class="quote-icon right">
           <path
             d="M9.983 3v7.391c0 5.704-3.731 9.57-8.983 10.609l-.995-2.151c2.432-.917 3.995-3.638 3.995-5.849h-4v-10h9.983zm14.017 0v7.391c0 5.704-3.748 9.57-9 10.609l-.996-2.151c2.433-.917 3.996-3.638 3.996-5.849h-3.983v-10h9.983z" />
@@ -408,6 +411,26 @@
     </div>
   </section>
 
+  <!-- 카드뉴스 섹션 (독립) -->
+  <section class="section cardnews-section">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <span class="section-tag">CARD NEWS</span>
+        <h2 class="section-title">현주씨가 <em>알려드려요</em></h2>
+      </div>
+    </div>
+    <div class="cardnews-wrap animate-on-scroll" style="--delay:0.1s">
+      <div class="cardnews-slider" id="cardnews-slider">
+        <div class="cardnews-track" id="cardnews-track">
+          <!-- JS renderCardNews()에서 동적으로 렌더링 -->
+        </div>
+      </div>
+      <div class="cardnews-dots" id="cardnews-dots">
+        <!-- JS renderCardNews()에서 동적으로 렌더링 -->
+      </div>
+    </div>
+  </section>
+
   <!-- 4대 핵심 가치 (신설) -->
   <section id="philosophy" class="section philosophy">
     <div class="container">
@@ -449,39 +472,8 @@
         </h2>
       </div>
 
-      <div class="video-grid animate-on-scroll" style="--delay: 0.1s">
-        <!-- 영상 1 (기존) -->
-        <div class="video-item" onclick="openVideo('IWeB56h_X78')">
-          <div class="video-thumb">
-            <img src="https://img.youtube.com/vi/IWeB56h_X78/hqdefault.jpg" alt="영상 1">
-            <div class="play-btn"></div>
-          </div>
-          <span class="video-label">필승!! 경선승리</span>
-        </div>
-        <!-- 영상 2 (추가 링크 1) -->
-        <div class="video-item" onclick="openVideo('uxfq0quNYIg')">
-          <div class="video-thumb">
-            <img src="https://img.youtube.com/vi/uxfq0quNYIg/hqdefault.jpg" alt="영상 2">
-            <div class="play-btn"></div>
-          </div>
-          <span class="video-label">하하하, 하현주가 딱!!</span>
-        </div>
-        <!-- 영상 3 (추가 링크 2) -->
-        <div class="video-item" onclick="openVideo('T0XgALKVqOk')">
-          <div class="video-thumb">
-            <img src="https://img.youtube.com/vi/T0XgALKVqOk/hqdefault.jpg" alt="영상 3">
-            <div class="play-btn"></div>
-          </div>
-          <span class="video-label">박찬대소 하현주</span>
-        </div>
-        <!-- 영상 4 (추가 링크 3) -->
-        <div class="video-item" onclick="openVideo('gaSU2sBJ4aI')">
-          <div class="video-thumb">
-            <img src="https://img.youtube.com/vi/gaSU2sBJ4aI/hqdefault.jpg" alt="영상 4">
-            <div class="play-btn"></div>
-          </div>
-          <span class="video-label">선거사무실 오픈</span>
-        </div>
+      <div class="video-grid animate-on-scroll" id="video-grid" style="--delay: 0.1s">
+        <!-- JS에서 동적 렌더링 (관리자 패널로 수정 가능) -->
       </div>
 
       <!-- 유튜브 채널 방문 유도 버튼 추가 -->
