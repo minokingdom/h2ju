@@ -879,7 +879,7 @@ const DEFAULT_CONFIG = {
     { id: 'T0XgALKVqOk', label: '박찬대소 하현주' },
     { id: 'gaSU2sBJ4aI', label: '선거사무실 오픈' }
   ],
-  heroSlogan: '남동을 지역위원회\n#영입인재_1호',
+  heroSlogan: '남동을 지역위원회\n#영입인재',
   careers: {
     current: ['더불어민주당 남동(을) 사회적경제위원장', '대한민국 주민자치연합회 사무총장', '민주평통 남동구 자문위원'],
     previous: ['서창2동 주민자치회장', '남동구 주민자치협의회 사무국장', '인천시 주민자치연합회 사무총장']
