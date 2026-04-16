@@ -1275,9 +1275,9 @@ function showAdminPanel(password) {
     const btn = el.querySelector('#adm-save');
     const msg = el.querySelector('#adm-msg');
     
-    const videos = Array.from(el.querySelectorAll('.adm-vrow')).map(r => ({
-      id: r.querySelector('.vid-id').value.trim(),
-      label: r.querySelector('.vid-label').value.trim() || '제목 없음'
+    const videos = Array.from(el.querySelectorAll('#adm-vlist .adm-vrow')).map(r => ({
+      id: r.querySelector('.vid-id')?.value.trim() || '',
+      label: r.querySelector('.vid-label')?.value.trim() || '제목 없음'
     })).filter(v => v.id);
     if (!videos.length) { alert('영상 ID를 1개 이상 입력해주세요.'); return; }
     
