@@ -1,31 +1,21 @@
-import { kv } from '@vercel/kv';
+import fs from 'fs';
+import path from 'path';
 
 export default async function handler(req, res) {
   try {
-    const config = await kv.get('h2ju_config');
+    // [진단용 실험] KV 데이터를 무시하고 무조건 bike.png를 반환합니다.
+    const defaultImgPath = path.join(process.cwd(), 'bike.png');
+    const defaultImg = fs.readFileSync(defaultImgPath);
     
-    // 만약 관리자가 메타이미지를 등록했다면
-    if (config && config.metaImage && config.metaImage.startsWith('data:image')) {
-      // PNG 또는 JPEG 동적 처리
-      const isPng = config.metaImage.includes('image/png');
-      const base64Data = config.metaImage.replace(/^data:image\/\w+;base64,/, '');
-      const imgBuffer = Buffer.from(base64Data, 'base64');
-      
-      // 바이너리 응답을 위한 명시적 헤더 설정 (카카오 크롤러 호환성)
-      res.setHeader('Content-Type', isPng ? 'image/png' : 'image/jpeg');
-      res.setHeader('Content-Length', imgBuffer.length);
-      // 카카오톡 모바일 앱이 기기 로컬 캐싱을 거부하고 렌더링을 포기(하얀 네모)하는 버그를 막기 위해
-      // 브라우저용 로컬 캐시(max-age)를 무조건 길게 주어 앱 내부 이미지 렌더러가 정상 로딩되도록 강제
-      res.setHeader('Cache-Control', 'public, max-age=31536000, s-maxage=60, stale-while-revalidate=86400');
-      
-      // res.send 대신 원시 스트림 전송(res.end)으로 Vercel 내부 변조(octet-stream 등) 방지
-      return res.end(imgBuffer);
-    }
-  } catch (e) {
-    console.error('OG Image Fetch Error:', e);
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Content-Length', defaultImg.length);
+    // 캐시 확인을 위해 캐시 기간을 짧게 설정
+    res.setHeader('Cache-Control', 'public, s-maxage=0, max-age=0, must-revalidate');
+    
+    console.log('Diagnostic mode: Serving bike.png directly');
+    return res.end(defaultImg);
+  } catch (err) {
+    console.error('Diagnostic Image Error:', err);
+    return res.status(500).end();
   }
-  
-  // KV에 데이터가 없을 경우 기본 이미지 반환
-  res.setHeader('Cache-Control', 's-maxage=60');
-  return res.redirect(302, '/bike.png');
 };

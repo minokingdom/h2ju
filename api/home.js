@@ -17,8 +17,8 @@ export default async function handler(req, res) {
     const version = config && config.configDate ? config.configDate : Math.floor(Date.now() / 600000);
 
     // 4. 메타태그 주소를 버전이 붙은 주소로 치환
-    // https://남동구하현주.kr/thumb.jpg -> https://남동구하현주.kr/thumb.jpg?v=VERSION
-    const versionedUrl = `https://남동구하현주.kr/thumb.jpg?v=${version}`;
+    // https://xn--2e0b94dbtdp35a89nr3a.kr/thumb.jpg -> https://xn--2e0b94dbtdp35a89nr3a.kr/thumb.jpg?v=VERSION
+    const versionedUrl = `https://xn--2e0b94dbtdp35a89nr3a.kr/thumb.jpg?v=${version}`;
     
     html = html.replace(
       /<meta property="og:image" content="[^"]+">/g, 

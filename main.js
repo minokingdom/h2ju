@@ -1257,55 +1257,86 @@ function showAdminPanel(password) {
     if (cropperInst) { cropperInst.destroy(); cropperInst = null; }
   };
 
-  el.querySelector('#cropper-apply').onclick = () => {
-    if (!cropperInst) return;
-    const btn = el.querySelector('#cropper-apply');
-    const oldText = btn.innerHTML;
-    btn.innerHTML = '압축 중...';
-    btn.disabled = true;
+    el.querySelector('#cropper-apply').onclick = () => {
+      if (!cropperInst) return;
+      const btn = el.querySelector('#cropper-apply');
+      const oldText = btn.innerHTML;
+      btn.innerHTML = '압축 및 최적화 중...';
+      btn.disabled = true;
 
-    // Vercel KV 1MB Value Size Limit 완벽 회피를 위한 초고효율 압축
-    // 카드뉴스: 최대 600px 50% 품질 (장당 약 40~60KB)
-    let maxWidth = 600, maxHeight = 600;
-    let format = 'image/jpeg';
-    let quality = 0.5;
+      // 설정값 초기화
+      let maxWidth = 600, maxHeight = 600;
+      let format = 'image/jpeg';
+      let quality = 0.5;
 
-    if (currentCropTarget === 'meta') {
-      maxWidth = 800; maxHeight = 400; // 카카오 공식 표준
-      format = 'image/jpeg';
-      quality = 0.6; // 너무 낮으면 깨지므로 0.6 유지
-    }
-    // PNG 투명 배경이 카톡 네이티브 앱에서 검정색/흰색으로 뭉개지는 오류를 막기 위해,
-    // getCroppedCanvas() 실행 시 투명도 부분을 무조건 완전한 흰색(#fff)으로 강제 채워버림
-    const canvas = cropperInst.getCroppedCanvas({ 
-      maxWidth, maxHeight,
-      fillColor: '#fff' 
-    });
-    const base64Url = canvas.toDataURL(format, quality);
-    
-    if (currentCropTarget === 'cardnews') {
-      const row = el.querySelectorAll('#adm-cnlist .adm-vrow')[currentCropIndex];
-      if (row) {
-        const urlInp = row.querySelector('.cn-url');
-        const thumb = row.querySelector('.cn-thumb');
+      if (currentCropTarget === 'meta') {
+        maxWidth = 800; maxHeight = 400; // 카카오 공식 표준
+        format = 'image/jpeg';
+        quality = 0.6;
+      }
+
+      // 1단계 추출
+      const canvas = cropperInst.getCroppedCanvas({ maxWidth, maxHeight, fillColor: '#fff' });
+      let base64Url = canvas.toDataURL(format, quality);
+      
+      // 용량 체크 및 2차 압축 (1MB KV 제한 및 3MB 카톡 제한 대비)
+      // Base64 문자열 길이를 이용한 대략적인 바이트 계산 (0.75 곱하기)
+      let sizeInBytes = base64Url.length * 0.75;
+      
+      if (sizeInBytes > 900000) { // 약 900KB 초과 시 품질 하향
+        console.warn('용량 초과로 인한 2차 압축 진행:', Math.round(sizeInBytes/1024), 'KB');
+        base64Url = canvas.toDataURL(format, 0.4);
+        sizeInBytes = base64Url.length * 0.75;
+      }
+
+      const sizeInKb = Math.round(sizeInBytes / 1024);
+      const sizeText = ` (${sizeInKb}KB)`;
+      
+      if (currentCropTarget === 'cardnews') {
+        const row = el.querySelectorAll('#adm-cnlist .adm-vrow')[currentCropIndex];
+        if (row) {
+          const urlInp = row.querySelector('.cn-url');
+          const thumb = row.querySelector('.cn-thumb');
+          urlInp.value = base64Url;
+          thumb.src = base64Url;
+          thumb.style.display = 'block';
+          // 용량 텍스트 표시 기능 추가
+          let sizeEl = row.querySelector('.adm-size-info');
+          if (!sizeEl) {
+            sizeEl = document.createElement('span');
+            sizeEl.className = 'adm-size-info';
+            sizeEl.style.fontSize = '10px';
+            sizeEl.style.color = '#888';
+            row.querySelector('.adm-vnum').appendChild(sizeEl);
+          }
+          sizeEl.textContent = sizeInKb + 'K';
+          urlInp.dispatchEvent(new Event('input'));
+        }
+      } else if (currentCropTarget === 'meta') {
+        const urlInp = el.querySelector('#adm-meta-url');
+        const thumb = el.querySelector('#adm-meta-thumb');
         urlInp.value = base64Url;
         thumb.src = base64Url;
         thumb.style.display = 'block';
-        urlInp.dispatchEvent(new Event('input'));
+        
+        // 메타 이미지 쪽에도 용량 표시
+        let sizeEl = el.querySelector('#adm-meta-size');
+        if (!sizeEl) {
+          sizeEl = document.createElement('div');
+          sizeEl.id = 'adm-meta-size';
+          sizeEl.style.fontSize = '11px';
+          sizeEl.style.marginTop = '4px';
+          sizeEl.style.color = sizeInKb > 300 ? '#f87171' : '#4ade80';
+          thumb.parentElement.appendChild(sizeEl);
+        }
+        sizeEl.textContent = `현재 압축 용량: ${sizeInKb}KB ${sizeInKb > 1000 ? '(⚠️ 1MB 초과)' : '(안전)'}`;
       }
-    } else if (currentCropTarget === 'meta') {
-      const urlInp = el.querySelector('#adm-meta-url');
-      const thumb = el.querySelector('#adm-meta-thumb');
-      urlInp.value = base64Url;
-      thumb.src = base64Url;
-      thumb.style.display = 'block';
-    }
-    
-    cropperModal.style.display = 'none';
-    btn.innerHTML = oldText;
-    btn.disabled = false;
-    cropperInst.destroy(); cropperInst = null;
-  };
+      
+      cropperModal.style.display = 'none';
+      btn.innerHTML = oldText;
+      btn.disabled = false;
+      cropperInst.destroy(); cropperInst = null;
+    };
   // ===================================
 
 
