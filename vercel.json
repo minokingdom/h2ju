@@ -8,5 +8,10 @@
       "source": "/thumb.jpg",
       "destination": "/api/og-image"
     }
-  ]
+  ],
+  "functions": {
+    "api/home.js": {
+      "includeFiles": "template.html"
+    }
+  }
 }
