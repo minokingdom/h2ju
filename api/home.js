@@ -21,32 +21,25 @@ export default async function handler(req, res) {
       console.error('KV Read Error in home:', kvErr.message);
     }
 
-    // 1. 가장 호환성이 높은 퓨니코드 도메인으로 베이스 주소 설정
-    const basePunyDomain = 'https://xn--2e0b94dbtdp35a89nr3a.kr';
-    const versionedOgImage = `${basePunyDomain}/thumb.jpg?v=${configDate}`;
+    // 현재 요청의 호스트(도메인)와 프로토콜을 동적으로 가져옵니다.
+    const host = req.headers.host || 'xn--2e0b94dbtdp35a89nr3a.kr';
+    const protocol = req.headers['x-forwarded-proto'] || 'https';
 
-    // 2. 강력한 정규 표현식으로 메타 태그 일괄 교체 (공백/들여쓰기 완벽 대응)
-    html = html.replace(
-      /\s*<meta property="og:image" content="[^"]*"\s*\/?>/gi,
-      `\n  <meta property="og:image" content="${versionedOgImage}">`
-    );
-    html = html.replace(
-      /\s*<meta name="twitter:image" content="[^"]*"\s*\/?>/gi,
-      `\n  <meta name="twitter:image" content="${versionedOgImage}">`
-    );
-    html = html.replace(
-      /\s*<meta property="og:url" content="[^"]*"\s*\/?>/gi,
-      `\n  <meta property="og:url" content="${basePunyDomain}/">`
-    );
+    // 접속한 도메인에 맞춰 고정 주소와 버전을 붙여 카카오톡 캐시를 갱신함
+    const versionedOgImage = `${protocol}://${host}/thumb.jpg?v=${configDate}`;
 
-    // 3. 이미지 규격 강제 최적화 (1200x630 권장)
     html = html.replace(
-      /\s*<meta property="og:image:width" content="[^"]*"\s*\/?>/gi,
-      `\n  <meta property="og:image:width" content="1200">`
+      /<meta property="og:image" content="[^"]*">/g,
+      `<meta property="og:image" content="${versionedOgImage}">`
     );
     html = html.replace(
-      /\s*<meta property="og:image:height" content="[^"]*"\s*\/?>/gi,
-      `\n  <meta property="og:image:height" content="630">`
+      /<meta name="twitter:image" content="[^"]*">/g,
+      `<meta name="twitter:image" content="${versionedOgImage}">`
+    );
+    // og:url 도 접속 도메인에 맞춰 동적 변경
+    html = html.replace(
+      /<meta property="og:url" content="[^"]*">/g,
+      `<meta property="og:url" content="${protocol}://${host}/">`
     );
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
