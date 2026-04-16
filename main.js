@@ -1045,6 +1045,12 @@ function showAdminLogin() {
 
 function showAdminPanel(password) {
   document.getElementById('admin-panel-overlay')?.remove();
+  
+  if (!document.getElementById('cropper-js')) {
+    const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css'; link.id = 'cropper-css'; document.head.appendChild(link);
+    const script = document.createElement('script'); script.src = 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js'; script.id = 'cropper-js'; document.head.appendChild(script);
+  }
+
   const cfg = getSiteConfig();
   const el = document.createElement('div');
   el.id = 'admin-panel-overlay';
@@ -1120,13 +1126,19 @@ function showAdminPanel(password) {
         <div class="adm-section">
           <div class="adm-sh">🗞️ <h3>카드뉴스 관리</h3></div>
           <div class="adm-sb">
-            <p class="adm-hint">이미지 URL 5개를 입력하세요. (직접 업로드 후 URL 복사)</p>
+            <p class="adm-hint">이미지 URL을 입력하거나 [사진 선택] 버튼으로 자르기를 이용하세요.</p>
             <div id="adm-cnlist">
               ${(cfg.cardNews || DEFAULT_CONFIG.cardNews).map((cn, i) => `
                 <div class="adm-vrow" style="align-items:center; gap:8px;">
                   <div class="adm-vnum">${i + 1}</div>
                   <div class="adm-vinputs" style="flex:1;">
-                    <input class="adm-input cn-url" placeholder="이미지 URL" value="${cn.imageUrl || ''}">
+                    <div style="display:flex; gap:6px;">
+                      <input class="adm-input cn-url" placeholder="이미지 URL" value="${cn.imageUrl || ''}" style="flex:1;">
+                      <label class="adm-btn" style="background:var(--blue-500); color:white; padding:0 12px; border-radius:4px; font-size:0.85rem; font-weight:700; display:flex; align-items:center; cursor:pointer;" title="사진 파일 찾아보기">
+                        + 사진
+                        <input type="file" class="cn-file" accept="image/*" style="display:none;" data-index="${i}">
+                      </label>
+                    </div>
                     <input class="adm-input cn-label" placeholder="설명 (선택)" value="${cn.label || ''}">
                   </div>
                   <img class="adm-vthumb cn-thumb" src="${cn.imageUrl || ''}" style="width:48px;height:48px;object-fit:cover;border-radius:8px;background:#222;" onerror="this.style.display='none'" onload="this.style.display='block'">
@@ -1139,6 +1151,17 @@ function showAdminPanel(password) {
         <div class="adm-save-bar">
           <div id="adm-msg"></div>
           <button id="adm-save" class="adm-btn-save">💾 서버에 저장 및 적용</button>
+        </div>
+        
+        <!-- Cropper Modal Overlay -->
+        <div id="cropper-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:99999; flex-direction:column; padding:20px;">
+          <div style="flex:1; width:100%; min-height:0; display:flex; align-items:center; justify-content:center;">
+             <img id="cropper-img" src="" style="max-width:100%; max-height:100%; display:block;">
+          </div>
+          <div style="padding:20px 0; display:flex; gap:10px; justify-content:center;">
+            <button id="cropper-cancel" class="adm-btn" style="background:#555; padding:10px 20px; font-weight:700; color:white; border-radius:8px;">취소</button>
+            <button id="cropper-apply" class="adm-btn-save" style="padding:10px 20px;">자르기 및 적용</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1170,6 +1193,75 @@ function showAdminPanel(password) {
       thumb.style.display = urlInp.value.trim() ? 'block' : 'none';
     });
   });
+
+  // ========== Cropper UI 로직 ==========
+  let cropperInst = null;
+  let currentCropIndex = null;
+  const cropperModal = el.querySelector('#cropper-modal');
+  const cropperImg = el.querySelector('#cropper-img');
+  
+  el.querySelectorAll('.cn-file').forEach(inp => {
+    inp.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      currentCropIndex = parseInt(inp.getAttribute('data-index'));
+      
+      const reader = new FileReader();
+      reader.onload = (re) => {
+        cropperImg.src = re.target.result;
+        cropperModal.style.display = 'flex';
+        
+        if (cropperInst) { cropperInst.destroy(); }
+        // 이미지 로드 후 약간의 딜레이를 주어 크로퍼 초기화 안정성 확보
+        setTimeout(() => {
+          cropperInst = new window.Cropper(cropperImg, {
+            aspectRatio: 1, // 카드뉴스 최적 사각
+            viewMode: 1,
+            autoCropArea: 1,
+            dragMode: 'move',
+            background: false,
+          });
+        }, 50);
+      };
+      reader.readAsDataURL(file);
+      inp.value = ''; // 동일 파일 재 업로드 허용
+    });
+  });
+
+  el.querySelector('#cropper-cancel').onclick = () => {
+    cropperModal.style.display = 'none';
+    if (cropperInst) { cropperInst.destroy(); cropperInst = null; }
+  };
+
+  el.querySelector('#cropper-apply').onclick = () => {
+    if (!cropperInst) return;
+    const btn = el.querySelector('#cropper-apply');
+    const oldText = btn.innerHTML;
+    btn.innerHTML = '압축 중...';
+    btn.disabled = true;
+
+    // 모바일 배려 압축 해상도 최대 1080px & 75% 퀄리티 (Base64 용량 최적화)
+    const canvas = cropperInst.getCroppedCanvas({ maxWidth: 1080, maxHeight: 1080 });
+    const base64Url = canvas.toDataURL('image/jpeg', 0.75);
+    
+    const row = el.querySelectorAll('#adm-cnlist .adm-vrow')[currentCropIndex];
+    if (row) {
+      const urlInp = row.querySelector('.cn-url');
+      const thumb = row.querySelector('.cn-thumb');
+      urlInp.value = base64Url;
+      thumb.src = base64Url;
+      thumb.style.display = 'block';
+      // url input 트리거 발생 (혹시 모노리포트 등 이벤트가 물려있다면 대비)
+      urlInp.dispatchEvent(new Event('input'));
+    }
+    
+    cropperModal.style.display = 'none';
+    btn.innerHTML = oldText;
+    btn.disabled = false;
+    cropperInst.destroy(); cropperInst = null;
+  };
+  // ===================================
+
 
   function closePanel() {
     panel.style.transition = 'transform .25s ease';
