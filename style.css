@@ -308,7 +308,7 @@ img {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 0 54px;
+  padding: 0 34px;
   word-break: keep-all;
   max-width: 100%;
 }
@@ -336,6 +336,99 @@ img {
   bottom: -10px;
   right: 0;
 }
+
+/* 📝 인사말 섹션 (Intro Message) */
+.intro-message-section {
+  padding: 80px 0;
+  background-color: var(--bg-light);
+}
+
+.intro-message-box {
+  background: white;
+  border-radius: 20px;
+  padding: 50px 40px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 78, 162, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.intro-message-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 100%;
+  background: linear-gradient(to bottom, var(--blue-500), var(--blue-300));
+}
+
+.intro-greeting {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--blue-600);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.intro-greeting em {
+  font-style: normal;
+  display: block;
+  font-size: 1.8rem;
+  margin-top: 5px;
+}
+
+.intro-content {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #333;
+}
+
+.intro-content p {
+  margin-bottom: 20px;
+  word-break: keep-all;
+}
+
+.intro-content p:last-child {
+  margin-bottom: 0;
+}
+
+.intro-content strong {
+  color: var(--blue-600);
+  font-weight: 700;
+}
+
+.intro-highlight {
+  display: inline-block;
+  background: rgba(0, 78, 162, 0.05);
+  padding: 3px 8px;
+  border-radius: 4px;
+  color: var(--blue-600);
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .intro-message-section {
+    padding: 60px 0;
+  }
+  
+  .intro-message-box {
+    padding: 35px 25px;
+  }
+  
+  .intro-greeting {
+    font-size: 1.2rem;
+  }
+  
+  .intro-greeting em {
+    font-size: 1.5rem;
+  }
+  
+  .intro-content {
+    font-size: 1.05rem;
+  }
+}
+
 
 .party-name {
   color: var(--white);
