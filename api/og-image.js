@@ -2,9 +2,14 @@ import { kv } from '@vercel/kv';
 import fs from 'fs';
 import path from 'path';
 
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 export default async function handler(req, res) {
-  const rootDir = process.cwd();
-  const bikePath = path.join(rootDir, 'api', 'bike.png');
+  // 현재 파일(api/og-image.js)과 같은 위치에 있는 bike.png를 찾습니다.
+  const bikePath = path.join(__dirname, 'bike.png');
 
   try {
     // 1. 관리자 설정 이미지(KV) 시도

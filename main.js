@@ -1031,11 +1031,13 @@ function showAdminLogin() {
   setTimeout(() => inp.focus(), 80);
   let userPass = '';
   function tryLogin() {
-    userPass = inp.value;
+    userPass = inp.value.trim(); // 입력 즉시 공백 제거
     
-    // 이 단계에서는 서버에 실제 GET 비밀번호 검증용 호출을 하지 않고 다음 단계(POST 업데이트)에서 에러가 나면 튕겨내는 방식으로 함.
-    // 임시로 클라이언트 차원에서도 하드코딩된 패스워드를 체크하는 우회법이나, 패스워드를 넘겨서 설정 창부터 띄웁니다.
-    // 서버가 없었던 기존 사이트 구조상, 패널 UI는 보여주고 "저장"시에 인증 에러를 내뿜게 설계.
+    if (!userPass) {
+      err.textContent = '비밀번호를 입력해 주세요.';
+      return;
+    }
+
     el.remove(); 
     showAdminPanel(userPass);
   }

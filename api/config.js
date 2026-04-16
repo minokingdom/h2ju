@@ -27,8 +27,11 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Vercel 환경 변수가 없습니다.' });
     }
     
-    // 환경변수와 입력값 모두 trim() 처리하여 공백으로 인한 불일치 방지
-    if (!password || password.trim() !== adminPass.trim()) {
+    // 원본 비번과 입력 비번 모두 trim 처리 및 강제 문자열 변환
+    const inputPassword = String(password || '').trim();
+    const targetPassword = String(adminPass || '').trim();
+    
+    if (!inputPassword || inputPassword !== targetPassword) {
       return res.status(401).json({ error: '비밀번호가 일치하지 않습니다.' });
     }
     
