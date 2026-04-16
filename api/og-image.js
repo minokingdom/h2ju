@@ -10,19 +10,19 @@ export default async function handler(req, res) {
       const base64Data = config.metaImage.replace(/^data:image\/\w+;base64,/, '');
       const imgBuffer = Buffer.from(base64Data, 'base64');
       
-      // JPEG 바이너리 응답
+      // JPEG 바이너리 응답을 위한 명시적 헤더 설정 (카카오 크롤러 호환성)
       res.setHeader('Content-Type', 'image/jpeg');
-      // 캐시 처리 (Edge에서 빠르게 서빙하도록 설정, 최대 60초 캐싱)
+      res.setHeader('Content-Length', imgBuffer.length);
       res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate');
       
-      // 순수 이미지 파일 띄우기
-      return res.send(imgBuffer);
+      // res.send 대신 원시 스트림 전송(res.end)으로 Vercel 내부 변조(octet-stream 등) 방지
+      return res.end(imgBuffer);
     }
   } catch (e) {
     console.error('OG Image Fetch Error:', e);
   }
   
-  // KV에 설정이 없거나 아직 한 번도 저장하지 않았다면 기존 기본 이미지로 임시 렌더링(리다이렉트)
+  // KV에 데이터가 없을 경우 기본 이미지 반환
   res.setHeader('Cache-Control', 's-maxage=60');
   return res.redirect(302, '/bike.png');
 };
