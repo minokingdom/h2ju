@@ -8,19 +8,16 @@ export default async function handler(req, res) {
     
     // 관리자가 메타이미지를 등록했다면 이를 먼저 시도
     if (config && config.metaImage && config.metaImage.startsWith('data:image')) {
-      const isPng = config.metaImage.includes('image/png');
       const base64Data = config.metaImage.replace(/^data:image\/\w+;base64,/, '');
       const imgBuffer = Buffer.from(base64Data, 'base64');
       
-      // 카카오톡 3MB 제한 체크
-      if (imgBuffer.length <= 3000000) {
-        res.setHeader('Content-Type', isPng ? 'image/png' : 'image/jpeg');
+      // 용량 제한을 조금 더 유연하게 가져가되, 헤더를 아주 엄격하게 보냅니다.
+      if (imgBuffer.length > 0) {
+        res.setHeader('Content-Type', 'image/jpeg');
         res.setHeader('Content-Length', imgBuffer.length);
-        // 파일명 자체가 유니크하므로 긴 캐시 시간을 가져도 안전합니다 (1일).
         res.setHeader('Cache-Control', 'public, max-age=86400, must-revalidate');
-        return res.end(imgBuffer);
-      } else {
-        console.warn('OG Image exceeds 3MB, falling back to default');
+        res.write(imgBuffer);
+        return res.end();
       }
     }
   } catch (e) {

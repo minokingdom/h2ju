@@ -1,11 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/api/home"
-    },
-    {
-      "source": "/share-img/:v.jpg",
+      "source": "/api/og-image.jpg",
       "destination": "/api/og-image"
     },
     {
@@ -15,12 +11,13 @@
     {
       "source": "/og-banner-final.jpg",
       "destination": "/api/og-image"
+    },
+    {
+      "source": "/share-img/:v.jpg",
+      "destination": "/api/og-image"
     }
   ],
   "functions": {
-    "api/home.js": {
-      "includeFiles": "api/template.html"
-    },
     "api/og-image.js": {
       "includeFiles": "api/bike.png"
     }
