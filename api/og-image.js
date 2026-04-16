@@ -3,23 +3,15 @@ import fs from 'fs';
 import path from 'path';
 
 export default async function handler(req, res) {
-  // Vercel 환경에서 안전한 파일 경로 설정을 위해 process.cwd()를 사용합니다.
   const rootDir = process.cwd();
   const bikePath = path.join(rootDir, 'api', 'bike.png');
 
   try {
-    // 1. 강제 우회 모드 진단 (v-final-victory 주소인 경우)
-    if (req.url && req.url.includes('v-final-victory')) {
-      if (fs.existsSync(bikePath)) {
-        res.setHeader('Content-Type', 'image/png');
-        res.setHeader('X-OG-Source', 'FORCED_FALLBACK_BIKE_SUCCESS');
-        return res.end(fs.readFileSync(bikePath));
-      }
-    }
-
-    // 2. 관리자 설정 이미지(KV) 시도
+    // 1. 관리자 설정 이미지(KV) 시도
     const config = await kv.get('h2ju_config');
+    
     if (config && config.metaImage) {
+      // Base64 데이터에서 헤더 제거 및 디코딩
       const base64Data = config.metaImage.includes('base64,') 
         ? config.metaImage.split('base64,')[1] 
         : config.metaImage;
@@ -29,31 +21,30 @@ export default async function handler(req, res) {
       if (imgBuffer.length > 500) {
         res.setHeader('Content-Type', 'image/jpeg');
         res.setHeader('Content-Length', imgBuffer.length);
-        res.setHeader('X-OG-Source', 'KV_SUCCESS_REAL');
-        res.setHeader('Cache-Control', 'public, max-age=86400');
+        // 카카오톡이 선호하는 표준 캐시 설정 (1시간)
+        res.setHeader('Cache-Control', 'public, max-age=3600');
         return res.end(imgBuffer);
       }
     }
   } catch (e) {
-    res.setHeader('X-OG-Debug', `KV_ERR_${e.message.substring(0, 15)}`);
+    console.error('KV Read Error:', e.message);
   }
   
-  // 3. 기본 자전거 이미지 반환
+  // 2. 관리자 설정이 없거나 실패하면 즉시 '자전거 사진'으로 대체 (성공의 상징)
   try {
     if (fs.existsSync(bikePath)) {
+      const bikeImg = fs.readFileSync(bikePath);
       res.setHeader('Content-Type', 'image/png');
-      res.setHeader('X-OG-Source', 'FALLBACK_BIKE');
-      return res.end(fs.readFileSync(bikePath));
-    } else {
-      res.setHeader('X-OG-Debug', 'BIKE_NOT_FOUND_AT_API_FOLDER');
+      res.setHeader('Content-Length', bikeImg.length);
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      return res.end(bikeImg);
     }
   } catch (err) {
-    res.setHeader('X-OG-Debug', 'FALLBACK_READ_ERROR');
+    console.error('Bike Fallback Error:', err.message);
   }
 
-  // 4. 최후의 수단 (1x1 도트)
+  // 3. 진짜 최후의 수단
   const dot = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
   res.setHeader('Content-Type', 'image/png');
-  res.setHeader('X-OG-Source', 'LAST_DOT_FAILSAFE');
   return res.end(dot);
 }
