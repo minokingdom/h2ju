@@ -99,7 +99,7 @@ img {
   margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between; /* 로고와 햄버거 메뉴 버튼 사이 간격 벌리기 */
   height: 56px;
   /* 콤팩트하고 세련된 높이로 복구 */
   position: relative;
