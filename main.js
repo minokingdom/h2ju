@@ -870,7 +870,7 @@ function closeVideo() {
 // 관리자 패널 (Admin Panel)
 // ════════════════════════════════════════════
 
-const ADMIN_PASSWORD = 'h2ju2026';
+const ADMIN_PASSWORD = 'h2ju1011';
 
 const DEFAULT_CONFIG = {
   videos: [
