@@ -21,13 +21,11 @@ export default async function handler(req, res) {
       console.error('KV Read Error in home:', kvErr.message);
     }
 
-    // 현재 요청의 호스트(도메인)와 프로토콜을 동적으로 가져옵니다.
-    const host = req.headers.host || 'xn--2e0b94dbtdp35a89nr3a.kr';
-    const protocol = req.headers['x-forwarded-proto'] || 'https';
+    // 1. 가장 호환성이 높은 퓨니코드 도메인으로 베이스 주소 설정
+    const basePunyDomain = 'https://xn--2e0b94dbtdp35a89nr3a.kr';
+    const versionedOgImage = `${basePunyDomain}/thumb.jpg?v=${configDate}`;
 
-    // 접속한 도메인에 맞춰 고정 주소와 버전을 붙여 카카오톡 캐시를 갱신함
-    const versionedOgImage = `${protocol}://${host}/thumb.jpg?v=${configDate}`;
-
+    // 2. 메타 태그 일괄 교체
     html = html.replace(
       /<meta property="og:image" content="[^"]*">/g,
       `<meta property="og:image" content="${versionedOgImage}">`
@@ -36,10 +34,9 @@ export default async function handler(req, res) {
       /<meta name="twitter:image" content="[^"]*">/g,
       `<meta name="twitter:image" content="${versionedOgImage}">`
     );
-    // og:url 도 접속 도메인에 맞춰 동적 변경
     html = html.replace(
       /<meta property="og:url" content="[^"]*">/g,
-      `<meta property="og:url" content="${protocol}://${host}/">`
+      `<meta property="og:url" content="${basePunyDomain}/">`
     );
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
