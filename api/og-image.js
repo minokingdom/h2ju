@@ -13,7 +13,9 @@ export default async function handler(req, res) {
       // JPEG 바이너리 응답을 위한 명시적 헤더 설정 (카카오 크롤러 호환성)
       res.setHeader('Content-Type', 'image/jpeg');
       res.setHeader('Content-Length', imgBuffer.length);
-      res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate');
+      // 카카오톡 모바일 앱이 기기 로컬 캐싱을 거부하고 렌더링을 포기(하얀 네모)하는 버그를 막기 위해
+      // 브라우저용 로컬 캐시(max-age)를 무조건 길게 주어 앱 내부 이미지 렌더러가 정상 로딩되도록 강제
+      res.setHeader('Cache-Control', 'public, max-age=31536000, s-maxage=60, stale-while-revalidate=86400');
       
       // res.send 대신 원시 스트림 전송(res.end)으로 Vercel 내부 변조(octet-stream 등) 방지
       return res.end(imgBuffer);
