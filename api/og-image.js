@@ -29,7 +29,7 @@ export default async function handler(req, res) {
   
   // 기본 이미지(bike.png) 반환
   try {
-    const defaultImgPath = path.join(process.cwd(), 'bike.png');
+    const defaultImgPath = path.join(__dirname, 'bike.png');
     const defaultImg = fs.readFileSync(defaultImgPath);
     
     res.setHeader('Content-Type', 'image/png');
