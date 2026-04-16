@@ -35,3 +35,12 @@ module.exports = async function handler(req, res) {
 
   return res.status(405).json({ error: '허용되지 않은 메서드입니다.' });
 };
+
+// Vercel Serverless Function Body Parse Limit 확장 (최대 4.5MB까지 허용)
+module.exports.config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '4mb',
+    },
+  },
+};

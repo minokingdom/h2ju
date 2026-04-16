@@ -1240,9 +1240,9 @@ function showAdminPanel(password) {
     btn.innerHTML = '압축 중...';
     btn.disabled = true;
 
-    // 모바일 배려 압축 해상도 최대 1080px & 75% 퀄리티 (Base64 용량 최적화)
-    const canvas = cropperInst.getCroppedCanvas({ maxWidth: 1080, maxHeight: 1080 });
-    const base64Url = canvas.toDataURL('image/jpeg', 0.75);
+    // 모바일 배려 & Vercel KV 한도(1MB) 및 API Payload 한계 우회 압축 해상도 최대 800px & 70% 퀄리티 (Base64 용량 최적화)
+    const canvas = cropperInst.getCroppedCanvas({ maxWidth: 800, maxHeight: 800 });
+    const base64Url = canvas.toDataURL('image/jpeg', 0.7);
     
     const row = el.querySelectorAll('#adm-cnlist .adm-vrow')[currentCropIndex];
     if (row) {
