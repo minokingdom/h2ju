@@ -16,6 +16,8 @@ export default async function handler(req, res) {
 
     // 4. 모든 자산 주소에 버전 번호(?v=...)를 전역적으로 강제 주입
     // 특정 태그를 찾는 정규식 대신, 파일 전체에서 해당 파일명을 찾아 치환하는 가장 확실한 방법을 사용합니다.
+    const host = req.headers.host || 'xn--2e0b94dbtdp35a89nr3a.kr';
+    const protocol = req.headers['x-forwarded-proto'] || 'https';
     const versionedThumb = `thumb.jpg?v=${version}`;
     const versionedJS = `main.js?v=${version}`;
     const versionedCSS = `style.css?v=${version}`;
@@ -41,12 +43,27 @@ export default async function handler(req, res) {
     return res.end(html);
   } catch (e) {
     console.error('Home Renderer Error:', e);
-    // 에러 시 원본 index.html이라도 서빙
+    // 에러 시 최소한의 화면이라도 서빙 (경로 재확인)
     try {
-      const html = fs.readFileSync(path.join(process.cwd(), 'index.html'), 'utf8');
+      const fallbackPath = path.join(__dirname, 'template.html');
+      const html = fs.readFileSync(fallbackPath, 'utf8');
       return res.status(200).send(html);
-    } catch(err) {
-      return res.status(500).send('Internal Server Error');
+    } catch (err) {
+      console.error('Home API Error:', e);
+      res.status(500).send(`
+        <div style="padding:20px; font-family:sans-serif;">
+          <h2 style="color:#f87171;">❌ 서버 내부 오류 발생</h2>
+          <p>에러 내용: <strong>${e.message}</strong></p>
+          <hr>
+          <p>진단 정보:</p>
+          <ul>
+            <li>__dirname: ${__dirname}</li>
+            <li>process.cwd(): ${process.cwd()}</li>
+            <li>Node.js: ${process.version}</li>
+          </ul>
+          <p>이 화면이 보인다면, 위 정보를 복사해서 알려주세요!</p>
+        </div>
+      `);
     }
   }
 }
