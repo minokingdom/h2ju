@@ -509,14 +509,15 @@ function initNavigation() {
     const swipeDistance = startX - endX; // 양수: 왼쪽으로 밀기 (메뉴 닫기 등)
     const screenWidth = window.innerWidth;
 
-    // 1. 밀기 (메뉴 열기)
-    // 오른쪽으로 40px 이상 밀었을 때
+    // 1. 밀기 (메뉴 열기) - 예민함 이슈로 비활성화 (버튼으로만 열기)
+    /*
     if (swipeDistance < -40) {
       if (!mobileMenu.classList.contains('active')) {
         mobileMenu.classList.add('active');
         document.body.classList.add('menu-open');
       }
     }
+    */
 
     // 2. 이미 메뉴가 열린 상태에서 아무 곳이나 왼쪽으로 40px 이상 밀면 닫기
     if (mobileMenu.classList.contains('active') && swipeDistance > 40) {
