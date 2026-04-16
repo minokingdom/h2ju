@@ -896,7 +896,8 @@ const DEFAULT_CONFIG = {
     { imageUrl: 'gallery-3.png', label: '카드뉴스 3' },
     { imageUrl: 'gallery-4.png', label: '카드뉴스 4' },
     { imageUrl: 'gallery-5.png', label: '카드뉴스 5' }
-  ]
+  ],
+  metaImage: ''
 };
 
 let CURRENT_CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
@@ -911,7 +912,8 @@ async function fetchSiteConfig() {
         heroSlogan: data.heroSlogan !== undefined ? data.heroSlogan : DEFAULT_CONFIG.heroSlogan,
         careers: data.careers || DEFAULT_CONFIG.careers,
         popups: data.popups || DEFAULT_CONFIG.popups,
-        cardNews: data.cardNews || DEFAULT_CONFIG.cardNews
+        cardNews: data.cardNews || DEFAULT_CONFIG.cardNews,
+        metaImage: data.metaImage || DEFAULT_CONFIG.metaImage
       };
     }
   } catch (err) {
@@ -1148,6 +1150,23 @@ function showAdminPanel(password) {
           </div>
         </div>
 
+        <div class="adm-section">
+          <div class="adm-sh">🔗 <h3>공유 썸네일(오픈그래프) 관리</h3></div>
+          <div class="adm-sb">
+            <p class="adm-hint">카톡 등 링크 공유 시 나타나는 메인 썸네일입니다. 비율(1.91:1)</p>
+            <div class="adm-vrow" style="align-items:center; gap:8px;">
+               <div class="adm-vinputs" style="flex:1;">
+                  <label class="adm-btn" style="background:var(--blue-500); color:white; padding:8px 12px; border-radius:4px; font-weight:700; display:inline-flex; align-items:center; cursor:pointer;" title="썸네일 사진 찾기">
+                    + 썸네일 새로 등록
+                    <input type="file" id="adm-meta-file" accept="image/*" style="display:none;" data-ratio="1.91">
+                  </label>
+                  <input type="hidden" id="adm-meta-url" value="${cfg.metaImage || ''}">
+               </div>
+               <img id="adm-meta-thumb" src="${cfg.metaImage || 'bike.png'}" style="width:120px;height:63px;object-fit:cover;border-radius:6px;background:#222;border:1px solid #444;">
+            </div>
+          </div>
+        </div>
+
         <div class="adm-save-bar">
           <div id="adm-msg"></div>
           <button id="adm-save" class="adm-btn-save">💾 서버에 저장 및 적용</button>
@@ -1196,15 +1215,21 @@ function showAdminPanel(password) {
 
   // ========== Cropper UI 로직 ==========
   let cropperInst = null;
+  let currentCropTarget = null; // 'cardnews' or 'meta'
   let currentCropIndex = null;
   const cropperModal = el.querySelector('#cropper-modal');
   const cropperImg = el.querySelector('#cropper-img');
   
-  el.querySelectorAll('.cn-file').forEach(inp => {
+  // 파일 인풋들(카드뉴스 + 메타이미지) 통합 리스너
+  el.querySelectorAll('.cn-file, #adm-meta-file').forEach(inp => {
     inp.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      currentCropIndex = parseInt(inp.getAttribute('data-index'));
+      
+      const isMeta = inp.id === 'adm-meta-file';
+      currentCropTarget = isMeta ? 'meta' : 'cardnews';
+      currentCropIndex = isMeta ? null : parseInt(inp.getAttribute('data-index'));
+      const ratio = isMeta ? 1.91 : 1; // 메타태그는 1.91:1, 카드뉴스는 1:1
       
       const reader = new FileReader();
       reader.onload = (re) => {
@@ -1212,10 +1237,9 @@ function showAdminPanel(password) {
         cropperModal.style.display = 'flex';
         
         if (cropperInst) { cropperInst.destroy(); }
-        // 이미지 로드 후 약간의 딜레이를 주어 크로퍼 초기화 안정성 확보
         setTimeout(() => {
           cropperInst = new window.Cropper(cropperImg, {
-            aspectRatio: 1, // 카드뉴스 최적 사각
+            aspectRatio: ratio,
             viewMode: 1,
             autoCropArea: 1,
             dragMode: 'move',
@@ -1224,7 +1248,7 @@ function showAdminPanel(password) {
         }, 50);
       };
       reader.readAsDataURL(file);
-      inp.value = ''; // 동일 파일 재 업로드 허용
+      inp.value = ''; // 재업로드 허용
     });
   });
 
@@ -1240,19 +1264,30 @@ function showAdminPanel(password) {
     btn.innerHTML = '압축 중...';
     btn.disabled = true;
 
-    // 모바일 배려 & Vercel KV 한도(1MB) 및 API Payload 한계 우회 압축 해상도 최대 800px & 70% 퀄리티 (Base64 용량 최적화)
-    const canvas = cropperInst.getCroppedCanvas({ maxWidth: 800, maxHeight: 800 });
+    // 압축 해상도 처리
+    let maxWidth = 800, maxHeight = 800;
+    if (currentCropTarget === 'meta') {
+      maxWidth = 1200; maxHeight = 630; // OG 비율 스펙 허용치
+    }
+    const canvas = cropperInst.getCroppedCanvas({ maxWidth, maxHeight });
     const base64Url = canvas.toDataURL('image/jpeg', 0.7);
     
-    const row = el.querySelectorAll('#adm-cnlist .adm-vrow')[currentCropIndex];
-    if (row) {
-      const urlInp = row.querySelector('.cn-url');
-      const thumb = row.querySelector('.cn-thumb');
+    if (currentCropTarget === 'cardnews') {
+      const row = el.querySelectorAll('#adm-cnlist .adm-vrow')[currentCropIndex];
+      if (row) {
+        const urlInp = row.querySelector('.cn-url');
+        const thumb = row.querySelector('.cn-thumb');
+        urlInp.value = base64Url;
+        thumb.src = base64Url;
+        thumb.style.display = 'block';
+        urlInp.dispatchEvent(new Event('input'));
+      }
+    } else if (currentCropTarget === 'meta') {
+      const urlInp = el.querySelector('#adm-meta-url');
+      const thumb = el.querySelector('#adm-meta-thumb');
       urlInp.value = base64Url;
       thumb.src = base64Url;
       thumb.style.display = 'block';
-      // url input 트리거 발생 (혹시 모노리포트 등 이벤트가 물려있다면 대비)
-      urlInp.dispatchEvent(new Event('input'));
     }
     
     cropperModal.style.display = 'none';
@@ -1297,9 +1332,12 @@ function showAdminPanel(password) {
       imageUrl: r.querySelector('.cn-url').value.trim(),
       label: r.querySelector('.cn-label').value.trim()
     })).filter(cn => cn.imageUrl);
+    
+    // 메타 이미지 수집
+    const metaImage = el.querySelector('#adm-meta-url').value.trim();
 
     // 서버로 데이터 전송
-    const newConfig = { videos, heroSlogan, popups, careers: { current, previous }, cardNews };
+    const newConfig = { videos, heroSlogan, popups, careers: { current, previous }, cardNews, metaImage };
     
     try {
       btn.textContent = '⏳ 저장 중...';
