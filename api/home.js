@@ -25,8 +25,8 @@ export default async function handler(req, res) {
     const host = req.headers.host || 'xn--2e0b94dbtdp35a89nr3a.kr';
     const protocol = req.headers['x-forwarded-proto'] || 'https';
 
-    // 접속한 도메인에 맞춰 고정 주소와 버전을 붙여 카카오톡 캐시를 갱신함
-    const versionedOgImage = `${protocol}://${host}/thumb.jpg?v=${configDate}`;
+    // 최종 승리 전략: 사진 이름을 'og-banner-final.jpg'로 변경하여 카톡 캐시 무력화
+    const versionedOgImage = `${protocol}://${host}/og-banner-final.jpg?v=${configDate}`;
 
     html = html.replace(
       /<meta property="og:image" content="[^"]*">/g,
