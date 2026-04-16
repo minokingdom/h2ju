@@ -1,21 +1,42 @@
+import { kv } from '@vercel/kv';
 import fs from 'fs';
 import path from 'path';
 
 export default async function handler(req, res) {
   try {
-    // [진단용 실험] KV 데이터를 무시하고 무조건 bike.png를 반환합니다.
+    const config = await kv.get('h2ju_config');
+    
+    // 관리자가 메타이미지를 등록했다면 이를 먼저 시도
+    if (config && config.metaImage && config.metaImage.startsWith('data:image')) {
+      const isPng = config.metaImage.includes('image/png');
+      const base64Data = config.metaImage.replace(/^data:image\/\w+;base64,/, '');
+      const imgBuffer = Buffer.from(base64Data, 'base64');
+      
+      // 카카오톡 3MB 제한 체크
+      if (imgBuffer.length <= 3000000) {
+        res.setHeader('Content-Type', isPng ? 'image/png' : 'image/jpeg');
+        res.setHeader('Content-Length', imgBuffer.length);
+        res.setHeader('Cache-Control', 'public, max-age=31536000, s-maxage=60, stale-while-revalidate=86400');
+        return res.end(imgBuffer);
+      } else {
+        console.warn('OG Image exceeds 3MB, falling back to default');
+      }
+    }
+  } catch (e) {
+    console.error('OG Image Fetch Error:', e);
+  }
+  
+  // 기본 이미지(bike.png) 반환
+  try {
     const defaultImgPath = path.join(process.cwd(), 'bike.png');
     const defaultImg = fs.readFileSync(defaultImgPath);
     
     res.setHeader('Content-Type', 'image/png');
     res.setHeader('Content-Length', defaultImg.length);
-    // 캐시 확인을 위해 캐시 기간을 짧게 설정
-    res.setHeader('Cache-Control', 'public, s-maxage=0, max-age=0, must-revalidate');
-    
-    console.log('Diagnostic mode: Serving bike.png directly');
+    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
     return res.end(defaultImg);
   } catch (err) {
-    console.error('Diagnostic Image Error:', err);
-    return res.status(500).end();
+    console.error('Final Image Error:', err);
+    return res.status(404).end();
   }
 };

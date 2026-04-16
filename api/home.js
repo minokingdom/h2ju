@@ -12,14 +12,21 @@ export default async function handler(req, res) {
     const config = await kv.get('h2ju_config');
     
     // 3. 사진 버전 번호 생성 (config에 저장된 metaUpdate 또는 현재 시간의 시간/분 단위 사용)
-    // 매번 업데이트 시 main.js에서 configDate 같은 값이 저장되도록 할 예정이지만, 
-    // 안전하게 현재 시간의 10분 단위 값을 캐시 버스터로 사용 (너무 자주 바뀌면 SNS 로딩 느려짐)
     const version = config && config.configDate ? config.configDate : Math.floor(Date.now() / 600000);
 
-    // 4. 메타태그 주소를 버전이 붙은 주소로 치환
-    // https://xn--2e0b94dbtdp35a89nr3a.kr/thumb.jpg -> https://xn--2e0b94dbtdp35a89nr3a.kr/thumb.jpg?v=VERSION
-    const versionedUrl = `https://xn--2e0b94dbtdp35a89nr3a.kr/thumb.jpg?v=${version}`;
+    // 4. 메타태그 도메인 및 주소를 현재 접속한 도메인(Host)에 맞춰 동적으로 치환
+    const host = req.headers.host || 'xn--2e0b94dbtdp35a89nr3a.kr';
+    const protocol = req.headers['x-forwarded-proto'] || 'https';
+    const baseUrl = `${protocol}://${host}`;
+    const versionedUrl = `${baseUrl}/thumb.jpg?v=${version}`;
     
+    // og:url 치환
+    html = html.replace(
+      /<meta property="og:url" content="[^"]+">/g,
+      `<meta property="og:url" content="${baseUrl}/">`
+    );
+
+    // og:image / twitter:image 치환
     html = html.replace(
       /<meta property="og:image" content="[^"]+">/g, 
       `<meta property="og:image" content="${versionedUrl}">`
