@@ -25,18 +25,28 @@ export default async function handler(req, res) {
     const basePunyDomain = 'https://xn--2e0b94dbtdp35a89nr3a.kr';
     const versionedOgImage = `${basePunyDomain}/thumb.jpg?v=${configDate}`;
 
-    // 2. 메타 태그 일괄 교체
+    // 2. 강력한 정규 표현식으로 메타 태그 일괄 교체 (공백/들여쓰기 완벽 대응)
     html = html.replace(
-      /<meta property="og:image" content="[^"]*">/g,
-      `<meta property="og:image" content="${versionedOgImage}">`
+      /\s*<meta property="og:image" content="[^"]*"\s*\/?>/gi,
+      `\n  <meta property="og:image" content="${versionedOgImage}">`
     );
     html = html.replace(
-      /<meta name="twitter:image" content="[^"]*">/g,
-      `<meta name="twitter:image" content="${versionedOgImage}">`
+      /\s*<meta name="twitter:image" content="[^"]*"\s*\/?>/gi,
+      `\n  <meta name="twitter:image" content="${versionedOgImage}">`
     );
     html = html.replace(
-      /<meta property="og:url" content="[^"]*">/g,
-      `<meta property="og:url" content="${basePunyDomain}/">`
+      /\s*<meta property="og:url" content="[^"]*"\s*\/?>/gi,
+      `\n  <meta property="og:url" content="${basePunyDomain}/">`
+    );
+
+    // 3. 이미지 규격 강제 최적화 (1200x630 권장)
+    html = html.replace(
+      /\s*<meta property="og:image:width" content="[^"]*"\s*\/?>/gi,
+      `\n  <meta property="og:image:width" content="1200">`
+    );
+    html = html.replace(
+      /\s*<meta property="og:image:height" content="[^"]*"\s*\/?>/gi,
+      `\n  <meta property="og:image:height" content="630">`
     );
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
