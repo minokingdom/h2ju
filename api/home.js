@@ -8,11 +8,11 @@ export default async function handler(req, res) {
     const filePath = path.join(process.cwd(), 'index.html');
     let html = fs.readFileSync(filePath, 'utf8');
 
-    // 2. KV에서 최신 설정 가져오기 (버전 확인용)
+    // 3. 사이트 설정 가져오기 및 버전 계산 (강제 업데이트 포함)
     const config = await kv.get('h2ju_config');
-    
-    // 3. 사진 버전 번호 생성 (config에 저장된 metaUpdate 또는 현재 시간의 시간/분 단위 사용)
-    const version = config && config.configDate ? config.configDate : Math.floor(Date.now() / 600000);
+    // 배포 시점마다 강제로 버전을 올리기 위해 하드코딩된 타임스탬프 추가
+    const deployTag = '20260417-0140';
+    const version = config && config.configDate ? `${config.configDate}-${deployTag}` : deployTag;
 
     // 4. 메타태그 도메인 및 주소를 현재 접속한 도메인(Host)에 맞춰 동적으로 치환
     const host = req.headers.host || 'xn--2e0b94dbtdp35a89nr3a.kr';
@@ -43,6 +43,7 @@ export default async function handler(req, res) {
     // 5. 서버 캐시 무력화 (진단 기간 동안 항상 최신 HTML을 내보냅니다)
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Surrogate-Control', 'no-store'); // Vercel Edge 캐시도 전면 차단
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
     
