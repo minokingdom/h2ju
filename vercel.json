@@ -5,6 +5,10 @@
       "destination": "/api/home"
     },
     {
+      "source": "/share-img/:v.jpg",
+      "destination": "/api/og-image"
+    },
+    {
       "source": "/thumb.jpg",
       "destination": "/api/og-image"
     },
@@ -16,6 +20,9 @@
   "functions": {
     "api/home.js": {
       "includeFiles": "api/template.html"
+    },
+    "api/og-image.js": {
+      "includeFiles": "api/bike.png"
     }
   }
 }

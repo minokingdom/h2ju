@@ -16,8 +16,8 @@ export default async function handler(req, res) {
       if (imgBuffer.length <= 3000000) {
         res.setHeader('Content-Type', isPng ? 'image/png' : 'image/jpeg');
         res.setHeader('Content-Length', imgBuffer.length);
-        // 진단 기간 동안 서버 캐시 시간을 매우 짧게 가져갑니다.
-        res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=1, stale-while-revalidate=5');
+        // 파일명 자체가 유니크하므로 긴 캐시 시간을 가져도 안전합니다 (1일).
+        res.setHeader('Cache-Control', 'public, max-age=86400, must-revalidate');
         return res.end(imgBuffer);
       } else {
         console.warn('OG Image exceeds 3MB, falling back to default');

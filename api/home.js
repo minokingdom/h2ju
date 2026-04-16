@@ -18,10 +18,12 @@ export default async function handler(req, res) {
     // 특정 태그를 찾는 정규식 대신, 파일 전체에서 해당 파일명을 찾아 치환하는 가장 확실한 방법을 사용합니다.
     const host = req.headers.host || 'xn--2e0b94dbtdp35a89nr3a.kr';
     const protocol = req.headers['x-forwarded-proto'] || 'https';
-    const versionedThumb = `og-banner-final.jpg?v=${version}`;
+    const versionedThumb = `share-img/${version}.jpg`;
     const versionedJS = `main.js?v=${version}`;
     const versionedCSS = `style.css?v=${version}`;
 
+    // 모든 구형 사진 파일명을 새로운 동적 주소로 갈아끼웁니다.
+    html = html.split('og-banner-final.jpg').join(versionedThumb);
     html = html.split('thumb.jpg').join(versionedThumb);
     html = html.split('main.js').join(versionedJS);
     html = html.split('style.css').join(versionedCSS);
