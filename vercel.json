@@ -1,21 +1,9 @@
 {
+  "version": 2,
   "rewrites": [
-    {
-      "source": "/api/og-image.jpg",
-      "destination": "/api/og-image"
-    },
-    {
-      "source": "/thumb.jpg",
-      "destination": "/api/og-image"
-    },
-    {
-      "source": "/og-banner-final.jpg",
-      "destination": "/api/og-image"
-    },
-    {
-      "source": "/share-img/:v.jpg",
-      "destination": "/api/og-image"
-    }
+    { "source": "/", "destination": "/api/home" },
+    { "source": "/thumb.jpg", "destination": "/api/og-image" },
+    { "source": "/share-img/:v.jpg", "destination": "/api/og-image" }
   ],
   "functions": {
     "api/og-image.js": {
