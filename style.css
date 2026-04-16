@@ -117,8 +117,7 @@ img {
 
 /* 직함 (세련된 보조 텍스트) */
 .logo-name {
-  font-size: 1.3rem;
-  /* 세련된 크기 */
+  font-size: clamp(0.9rem, 4.2vw, 1.3rem);
   font-weight: 300;
   letter-spacing: -0.02em;
   opacity: 0.9;
@@ -126,8 +125,7 @@ img {
 
 /* 성함 (깔끔하고 힘 있는 강조) */
 .name-highlight {
-  font-size: 1.55rem;
-  /* 시원하면서도 정갈한 크기 */
+  font-size: clamp(1.15rem, 5.2vw, 1.55rem);
   font-weight: 900;
   margin-left: 6px;
   letter-spacing: -0.04em;
