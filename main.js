@@ -1264,13 +1264,16 @@ function showAdminPanel(password) {
     btn.innerHTML = '압축 중...';
     btn.disabled = true;
 
-    // 압축 해상도 처리
-    let maxWidth = 800, maxHeight = 800;
+    // Vercel KV 1MB Value Size Limit 완벽 회피를 위한 초고효율 압축
+    // 카드뉴스: 최대 600px 50% 품질 (장당 약 40~60KB)
+    // 메타이지미: 최대 800px 50% 품질 (장당 약 50~80KB)
+    let maxWidth = 600, maxHeight = 600;
     if (currentCropTarget === 'meta') {
-      maxWidth = 1200; maxHeight = 630; // OG 비율 스펙 허용치
+      maxWidth = 800; maxHeight = 418; // 1.91:1 비율 유지하면서 해상도 대폭 감소
     }
     const canvas = cropperInst.getCroppedCanvas({ maxWidth, maxHeight });
-    const base64Url = canvas.toDataURL('image/jpeg', 0.7);
+    // 품질을 0.5로 낮추어 용량을 획기적으로 줄여 다중 업로드 시에도 KV 한도(1MB) 이하 유지
+    const base64Url = canvas.toDataURL('image/jpeg', 0.5);
     
     if (currentCropTarget === 'cardnews') {
       const row = el.querySelectorAll('#adm-cnlist .adm-vrow')[currentCropIndex];

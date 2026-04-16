@@ -1,6 +1,6 @@
-const { kv } = require('@vercel/kv');
+import { kv } from '@vercel/kv';
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   try {
     const config = await kv.get('h2ju_config');
     
