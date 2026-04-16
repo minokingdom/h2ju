@@ -951,7 +951,11 @@ function renderVideos() {
 
 function renderHeroSlogan() {
   const p = document.querySelector('.hero-quote p');
-  if (p) p.innerHTML = getSiteConfig().heroSlogan.replace(/\n/g, '<br>');
+  if (p) {
+    let text = getSiteConfig().heroSlogan.replace(/\n/g, '<br>');
+    text = text.replace(/(#[^\s<]+)/g, '<span class="slogan-hashtag">$1</span>');
+    p.innerHTML = text;
+  }
 }
 
 function renderCareers() {
