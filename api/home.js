@@ -9,44 +9,48 @@ export default async function handler(req, res) {
   try {
     let html = fs.readFileSync(htmlPath, 'utf8');
     
-    // 사용자의 통찰대로 '고정 주소'를 사용하여 카카오톡의 신뢰도를 높입니다.
-    // 1. KV에서 최신 설정 날짜를 가져와 캐시 무력화(Version) 주소 생성
+    // 1. KV에서 설정을 가져오되, 카톡 스크래퍼를 위해 1초 타임아웃 적용 (속도 최우선)
     let configDate = Date.now();
     try {
-      const config = await kv.get('h2ju_config');
+      const kvPromise = kv.get('h2ju_config');
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('KV Timeout')), 1000)
+      );
+      
+      const config = await Promise.race([kvPromise, timeoutPromise]);
       if (config && config.configDate) {
         configDate = config.configDate;
       }
     } catch (kvErr) {
-      console.error('KV Read Error in home:', kvErr.message);
+      console.error('KV Interaction Error (Falling back to current timestamp):', kvErr.message);
     }
 
-    // 현재 요청의 호스트(도메인)와 프로토콜을 동적으로 가져옵니다.
-    const host = req.headers.host || 'xn--2e0b94dbtdp35a89nr3a.kr';
-    const protocol = req.headers['x-forwarded-proto'] || 'https';
+    // 2. 도메인 설정: 한글 도메인 '남동구하현주.kr'을 기본으로 사용
+    const host = '남동구하현주.kr'; 
+    const protocol = 'https';
 
-    // 최종 승리 전략: 사진 이름을 'og-banner-final.jpg'로 변경하여 카톡 캐시 무력화
+    // 3. 사진 주소에 v파라미터를 붙여 카카오톡 캐시를 강제로 새로고침함
     const versionedOgImage = `${protocol}://${host}/og-banner-final.jpg?v=${configDate}`;
 
+    // 4. 아주 유연한 정규식으로 og:image 및 twitter:image 교체 (사용자 수동 편집 대응)
     html = html.replace(
-      /<meta property="og:image" content="[^"]*">/g,
+      /<meta property="og:image" content="[^"]*">/gi,
       `<meta property="og:image" content="${versionedOgImage}">`
     );
     html = html.replace(
-      /<meta name="twitter:image" content="[^"]*">/g,
+      /<meta name="twitter:image" content="[^"]*">/gi,
       `<meta name="twitter:image" content="${versionedOgImage}">`
     );
-    // og:url 도 접속 도메인에 맞춰 동적 변경
     html = html.replace(
-      /<meta property="og:url" content="[^"]*">/g,
+      /<meta property="og:url" content="[^"]*">/gi,
       `<meta property="og:url" content="${protocol}://${host}/">`
     );
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    // 페이지 자체는 캐시를 하지 않도록 설정
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
     return res.end(html);
   } catch (e) {
+    // 오류 시 원본 index.html을 그대로 내보내어 사이트가 깨지는 것을 방지
     if (fs.existsSync(htmlPath)) {
       return res.end(fs.readFileSync(htmlPath));
     }
