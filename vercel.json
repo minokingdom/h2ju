@@ -1,8 +1,6 @@
 {
   "version": 2,
   "rewrites": [
-    { "source": "/og-banner-final.jpg", "destination": "/api/og-image" },
-    { "source": "/", "destination": "/api/home" },
     { "source": "/thumb.jpg", "destination": "/api/og-image" },
     { "source": "/share-img/:v.jpg", "destination": "/api/og-image" }
   ],
